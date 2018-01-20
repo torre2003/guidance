@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block titulo_head %}Lista de clientes{% endblock%}
+{% block titulo%}{% endblock%}
+{% block css %}
+    <link href="{% static '/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
+{% endblock %}
+{% block contenido %}
+
+
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Lista de clientes
+                </h2>
+            </div>
+            <div class="body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover js-basic-example dataTable" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
+                        <thead>
+                            <tr>
+                                <th>Rut</th>
+                                <th>Nombres</th>
+                                <th>Apellidos</th>
+                                <th>Fecha de nacimiento</th>
+                                <th>Dirección</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cliente in clientes%}
+                            <tr>
+                                <td>{{cliente.rut}}-{{cliente.digito_verificador}}</td>
+                                <td>{{cliente.nombres}}</td>
+                                <td>{{cliente.apellidos}}</td>
+                                <td>{% if cliente.fecha_nacimiento %} {{cliente.fecha_nacimiento}} {% else %}--------{% endif %}</td>
+                                <td>{{cliente.pais}},{{cliente.ciudad}},{{cliente.direccion}}</td>
+                                <td>{{cliente.email}}</td>
+                                <td>{{cliente.telefono}}</td>
+                            </tr>
+                            {% empty %}
+                                No hay clientes ingresados
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<!-- Jquery DataTable Plugin Js -->
+    <script src="{% static '/plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
+    <script src="{% static '/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
+    
+    <script src="{% static '/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static '/plugins/jquery-datatable/extensions/export/buttons.flash.min.js' %}"></script>
+    <script src="{% static '/plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
+    <script src="{% static '/plugins/jquery-datatable/extensions/export/pdfmake.min.js' %}"></script>
+    <script src="{% static '/plugins/jquery-datatable/extensions/export/vfs_fonts.js' %}"></script>
+    <script src="{% static '/plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
+    <script src="{% static '/plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
+
+    <script>
+        $(function () {
+            //Exportable table
+            $('#DataTables_Table_0').DataTable({
+                dom: 'Bfrtip',
+                responsive: true,
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            });
+        });
+    </script>
+{% endblock %}
+
+    

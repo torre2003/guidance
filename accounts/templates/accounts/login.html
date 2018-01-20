@@ -1,0 +1,64 @@
+
+{% load staticfiles %}
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>login - Guidance</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{% static 'accounts/login/css/login.css' %}" rel="stylesheet" id="bootstrap-css">
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" id="bootstrap-css">
+
+    <script src="{% static 'jquery/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'accounts/login/js/login.js' %}"></script>
+</head>
+<body class="login2background" style="background-image: url({{img_background}});">
+        <div class="container">  
+            <div class="col-lg-6 col-md-6 col-sm-8  loginbox">
+                <div class=" row">
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+                        <img src="{% static 'accounts/login/img/g.png' %}" alt="Logo" class="logo"> 
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6  ">
+                        <span class="singtext" >Guidance</span>   
+                    </div>
+                                 
+                </div>
+                <form method="post" action="">
+                {% csrf_token %}
+                <div class=" row loginbox_content ">
+                    <div class="input-group input-group-sm" >
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-user"></span>
+                        </span>
+                        <input class="form-control" type="text" placeholder="Usuario" name="username" >
+                    </div>
+                    <br>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-lock"></span>
+                        </span>
+                        <input class="form-control" type="password" placeholder="Constraseña" name="password">
+                    </div>              
+                </div>
+                <div class="row ">                   
+                    <div class="col-lg-8 col-md-8  col-sm-8 col-xs-7 forgotpassword "> 
+                        {% if error %}
+                            <p class="errorlogin">{{ error }}</p>
+                        {% endif %}
+                        <p><a href="#"  > Recuperar su contraseña</a></p>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4  col-xs-5 ">
+                        <button id="btn_ingresar" class=" btn btn-default submit-btn" >Ingresar<span class="glyphicon glyphicon-log-in"></span></button>
+                    </div>
+                </div>
+            </form>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-4 "></div>
+        </div>
+    </body>
+
+
+
