@@ -37,6 +37,7 @@ $(function () {
             'telefono': {
                 required: true,
                 maxlength: 100,
+                telefonos: true,
             },
             'rut': {
                 required: true,
@@ -47,9 +48,6 @@ $(function () {
             'dv': {
                 required: true,
                 maxlength: 1,
-            },
-            'telefono': {
-                maxlength: 300,
             },
         },
         highlight: function (input) {
@@ -108,6 +106,22 @@ $(function () {
         return value.match(/^\d\d\d\d?-\d\d\d\d?-\d\d\d\d?-\d\d\d\d$/);
     },
         'Please enter a credit card in the format XXXX-XXXX-XXXX-XXXX.'
+    );
+
+    //Telefonoes
+    $.validator.addMethod('telefonos', function (value, element) {
+        telefonos = value.split(',');
+        console.log(telefonos)
+        flag = true
+        for(var i=0; i < telefonos.length; i++){
+            console.log(telefonos[i]+'--'+telefonos[i].match(/^\d\d\d\d\d\d\d\d\d?$/))
+            if (telefonos[i] !=  '')
+                if (null == telefonos[i].match(/^\d\d\d\d\d\d\d\d\d?$/))
+                    flag = false
+        }
+        return flag;
+    },
+        'Debe ingresar números de 9 digitos separados por coma.'
     );
     //==================================================================================================
 });

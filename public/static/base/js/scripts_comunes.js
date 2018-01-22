@@ -6,7 +6,7 @@
 }
 
 //block page for ajax calls
-/*
+
 function blockpage(p1){
     if(p1){
         if (($('.block-page')[0]==undefined)) {
@@ -18,4 +18,4 @@ function blockpage(p1){
         $('.glyphicon-refresh-animate').remove();
     }
 }
-*/
+

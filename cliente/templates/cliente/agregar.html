@@ -111,24 +111,32 @@
 {% block scripts %}
 <!-- Jquery Validation Plugin Css -->
 <script src="{% static '/plugins/jquery-validation/jquery.validate.js' %}"></script>
-
 <script src="{% static 'base/js/pages/forms/form-validation.js' %}"></script>
-
 <script src="{% static '/plugins/momentjs/moment-with-locales.js' %}"></script>
-
 <script src="{% static '/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js' %}"></script>
+<script src="{% static 'common/js/funciones_form.js' %}"></script>
 
 <script>
     $( "#enviar" ).on( "click", function(e){
         form_validation.valid()
         setTimeout(function(){ 
             if (form_validation.valid() && $('label[class=error]').length == 0)
-                ajaxIngresarCliente ()
+                rut = $('input[name=rut]').val()
+                dv = $('input[name=dv]').val()
+                if (dv == 'k'){
+                    dv = 'K'
+                    $('input[name=dv]').val('K')
+                }
+                if (dv != calculaDigitoVerificador (rut) )
+                    alert('Rut incorrecto.');
+                else
+                    ajaxIngresarCliente ()
         }, 10); 
         
     });
 
     function ajaxIngresarCliente (){
+        blockpage(true)
         var form_data = $('#form_validation').serializeArray().reduce(function(obj, item) {
             obj[item.name] = item.value;
             return obj;
@@ -152,9 +160,11 @@
             }
             else
                 alert( response.messages[0].text);
+            blockpage(false)
         }).fail(function(response) {
             console.log(response);
             alert( "Error en la petición");
+            blockpage(false)
         });
     }
 
