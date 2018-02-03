@@ -1,7 +1,8 @@
 <div class="menu">
-    <div style="position: relative; overflow: hidden; width: auto; height: 690px;" class="slimScrollDiv"><ul class="list" style="overflow: hidden; width: auto; height: 690px;">
+    <div style="position: relative; overflow: hidden; width: auto; height: 690px;" class="slimScrollDiv">
+    <ul class="list" style="overflow: hidden; width: auto; height: 690px;">
         <li class="header">Navegación</li>
-        <li class="active">
+        <li id="index" >
             <a href="{% url 'accounts:index' %}" class=" waves-effect waves-block">
                 <i class="material-icons">home</i>
                 <span>Inicio</span>
@@ -20,13 +21,20 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'cliente:lista' %}" class=" waves-effect waves-block">
+                    <a href="{% url 'cliente:lista-cliente' %}" class=" waves-effect waves-block">
                         <i class="material-icons">people_outline</i>
                         <span>Lista de clientes</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{% url 'cliente:lista-potencial-cliente' %}" class=" waves-effect waves-block">
+                        <i class="material-icons">transfer_within_a_station</i>
+                        <span>Potenciales clientes</span>
+                    </a>
+                </li>
             </ul>
         </li>
+        <!--
         <li>
             <a href="javascript:void(0);" class="menu-toggle waves-effect waves-block">
                 <i class="material-icons">trending_down</i>
@@ -69,6 +77,8 @@
                 </li>
             </ul>
         </li>
-    </ul><div class="slimScrollBar" style="background: rgba(0, 0, 0, 0.5) none repeat scroll 0% 0%; width: 4px; position: absolute; top: 229px; opacity: 0.4; display: none; border-radius: 0px; z-index: 99; right: 1px; height: 511.936px;"></div><div class="slimScrollRail" style="width: 4px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 0px; background: rgb(51, 51, 51) none repeat scroll 0% 0%; opacity: 0.2; z-index: 90; right: 1px;"></div></div>
+        -->
+    </ul>
+    <div class="slimScrollBar" style="background: rgba(0, 0, 0, 0.5) none repeat scroll 0% 0%; width: 4px; position: absolute; top: 229px; opacity: 0.4; display: none; border-radius: 0px; z-index: 99; right: 1px; height: 511.936px;"></div><div class="slimScrollRail" style="width: 4px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 0px; background: rgb(51, 51, 51) none repeat scroll 0% 0%; opacity: 0.2; z-index: 90; right: 1px;"></div></div>
 </div>
 

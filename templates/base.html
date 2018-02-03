@@ -97,13 +97,21 @@
         {% endblock %}
     </div>
 </section>
-
     <!-- Jquery Core Js -->
     <script src="{% static '/plugins/jquery/jquery.min.js' %}"></script>
     <!--<script src="https://code.jquery.com/jquery-2.2.4.js"></script>-->
 
     <!-- Bootstrap Core Js -->
     <script src="{% static '/plugins/bootstrap/js/bootstrap.js' %}"></script>
+
+    <!-- Jquery cookie Js -->
+    <script src="{% static '/plugins/jquery-cookie/jquery.cookie.js' %}"></script>
+    
+    <!-- Scripts comunes -->
+    <script src="{% static '/base/js/scripts_comunes.js' %}"></script>
+
+    <!-- Custom Js -->
+    <script src="{% static 'base/js/admin.js' %}"></script>
 
     <!-- Select Plugin Js -->
     <script src="{% static '/plugins/bootstrap-select/js/bootstrap-select.js' %}"></script>
@@ -114,15 +122,17 @@
     <!-- Waves Effect Plugin Js -->
     <script src="{% static '/plugins/node-waves/waves.js' %}"></script>
 
-    <!-- Jquery CountTo Plugin Js -->
-    <script src="{% static '/plugins/jquery-countto/jquery.countTo.js' %}"></script>
+    <!-- Sweet Alert Css -->
+    <script src="{% static '/plugins/sweetalert/sweetalert.min.js' %}" ></script>
 
-    <!-- Morris Plugin Js -->
+    <!-- Jquery CountTo Plugin Js 
+    <script src="{% static '/plugins/jquery-countto/jquery.countTo.js' %}"></script>-->
+
+    <!-- Morris Plugin Js 
     <script src="{% static '/plugins/raphael/raphael.min.js' %}"></script>
-    <script src="{% static '/plugins/morrisjs/morris.js' %}"></script>
+    <script src="{% static '/plugins/morrisjs/morris.js' %}"></script>-->
 
-    <!-- Custom Js -->
-    <script src="{% static 'base/js/admin.js' %}"></script>
+
     <!--
     <script src="{% static 'base/js/pages/index.js' %}"></script>
 
@@ -132,8 +142,7 @@
     <!-- Django Ajax -->
     <script src="{% static '/base/js/DjangoAjax.js' %}"></script>
 
-    <!-- Scripts comunes -->
-    <script src="{% static '/base/js/scripts_comunes.js' %}"></script>
+
     {% block scripts %}
     {% endblock %}
 </body>

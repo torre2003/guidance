@@ -5090,7 +5090,7 @@ section.content {
       font-weight: normal;
       color: #aaa;
       position: absolute;
-      top: 10px;
+      top: -10px;
       left: 0;
       cursor: text;
       -moz-transition: 0.2s;

@@ -29,10 +29,10 @@ $.AdminBSB.options = {
     },
     leftSideBar: {
         scrollColor: 'rgba(0,0,0,0.5)',
-        scrollWidth: '4px',
+        scrollWidth: '14px',
         scrollAlwaysVisible: true,
-        scrollBorderRadius: '0',
-        scrollRailBorderRadius: '0',
+        scrollBorderRadius: '4px',
+        scrollRailBorderRadius: '4px',
         scrollActiveItemWhenPageLoad: true,
         breakpointWidth: 1170
     },

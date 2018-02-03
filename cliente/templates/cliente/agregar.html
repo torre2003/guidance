@@ -127,7 +127,11 @@
                     dv = 'K'
                     $('input[name=dv]').val('K')
                 }
-                if (dv != calculaDigitoVerificador (rut) )
+                if (dv == 'p'){
+                    dv = 'P'
+                    $('input[name=dv]').val('P')
+                }
+                if (dv != calculaDigitoVerificador (rut) && dv != 'P')
                     alert('Rut incorrecto.');
                 else
                     ajaxIngresarCliente ()
@@ -150,20 +154,52 @@
         };
         $.ajax({
             method: "POST",
-            url: "{% url 'cliente:gestion-json' %}",
+            url: "{% url 'cliente:gestion-cliente-json' %}",
             data: data
         }).done(function( response ) {
             console.log(response);
             if (response.state == 'success'){
-                alert( "Cliente creado correctamente.");
-                irAURL('{% url 'accounts:index' %}');
+                    cliente = null;
+                    swal({
+                      title: "Cliente",
+                      text: "El cliente se ha creado correctamente!",
+                      icon: "success",
+                      buttons: {
+                                al: {
+                                  text: "Ok",
+                                  value: "ok",
+                                },
+                                als: {
+                                  text: 'Imprimir Ficha',
+                                  value: "imprimir",
+                                }
+                          }
+                    }).then((value) => {
+                      switch (value) {
+                        case "imprimir":
+                            cliente = '?imprimir_cliente='+response.cliente_id;
+                            irAURL('{% url 'cliente:lista-cliente' %}'+cliente);
+                            break;
+                        case "ok":
+                            irAURL('{% url 'accounts:index' %}');
+                            break;
+                      }
+                    });
             }
             else
-                alert( response.messages[0].text);
+                swal({
+                  title: "Cliente",
+                  text: response.messages[0].text,
+                  icon: "error",
+                });
             blockpage(false)
         }).fail(function(response) {
             console.log(response);
-            alert( "Error en la petición");
+            swal({
+              title: "Servidor",
+              text: "Error en la petición",
+              icon: "error",
+            });
             blockpage(false)
         });
     }
@@ -175,5 +211,7 @@
         weekStart: 1,
         time: false
     });
+
+
 </script>
 {% endblock %}

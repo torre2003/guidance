@@ -4,7 +4,8 @@ $.validator.setDefaults({
 });
 
 $(function () {
-    form_validation = $('#form_validation').validate({
+    form_validation = $('#form_validation')
+    form_validation.validate({
         success: "valid",
         rules: {
             'checkbox': {
@@ -15,7 +16,7 @@ $(function () {
             },
             'nombres': {
                 required: true,
-                minlength: 10,
+                minlength: 3,
                 maxlength: 200,
             },
             'apellidos': {
@@ -37,12 +38,11 @@ $(function () {
             'telefono': {
                 required: true,
                 maxlength: 100,
-                telefonos: true,
+                //telefonos: true,
             },
             'rut': {
                 required: true,
-                maxlength: 7,
-                maxlength: 8,
+                maxlength: 15,
                 digits: true
             },
             'dv': {
@@ -111,10 +111,8 @@ $(function () {
     //Telefonoes
     $.validator.addMethod('telefonos', function (value, element) {
         telefonos = value.split(',');
-        console.log(telefonos)
         flag = true
         for(var i=0; i < telefonos.length; i++){
-            console.log(telefonos[i]+'--'+telefonos[i].match(/^\d\d\d\d\d\d\d\d\d?$/))
             if (telefonos[i] !=  '')
                 if (null == telefonos[i].match(/^\d\d\d\d\d\d\d\d\d?$/))
                     flag = false

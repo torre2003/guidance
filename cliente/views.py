@@ -7,26 +7,29 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 import json
 
 from . import templates_pdf
-from . import framework as f_cliente
+from framework import ManagerCliente
 from apps import ClienteConfig
 
 
 @login_required
-def agregar_view(request):
+def view_agregar(request):
     context = {}
     return render(request, ClienteConfig.name+'/agregar.html', context)
 
+
 @login_required
-def gestion_cliente_json_view(request):
+def json_gestion_cliente(request):
     context = {}
     if request.method == 'POST':
         post_dic = json.loads(request.POST.get('datos'))
         print post_dic
         res_json = {}
         if post_dic['opcion'] == 'CONSULTA':
-            cliente = f_cliente.obtener_cliente(post_dic['cliente'])
+            cliente = ManagerCliente.obtener_cliente(post_dic['cliente'])
             dic_cliente = cliente.__dict__
-            fecha_nacimiento = str(dic_cliente['fecha_nacimiento'].day)+'-'+str(dic_cliente['fecha_nacimiento'].month)+'-'+str(dic_cliente['fecha_nacimiento'].year)
+            fecha_nacimiento = ''
+            if dic_cliente['fecha_nacimiento'] is not None:
+                fecha_nacimiento = unicode(dic_cliente['fecha_nacimiento'].day)+'-'+unicode(dic_cliente['fecha_nacimiento'].month)+'-'+unicode(dic_cliente['fecha_nacimiento'].year)
             dic_cliente['fecha_nacimiento'] = fecha_nacimiento
             dic_cliente['_state'] = ''
             if cliente is None:
@@ -47,7 +50,7 @@ def gestion_cliente_json_view(request):
                     fecha_nacimiento = datetime.date(datetime.strptime(info_cliente['fecha_nacimiento'], "%d-%m-%Y"))
                 except Exception, e:
                     print '',e
-            nuevo_cliente = f_cliente.crear_cliente (
+            nuevo_cliente = ManagerCliente.crear_cliente (
                 nombres = info_cliente['nombres'],
                 apellidos = info_cliente['apellidos'],
                 direccion = info_cliente['direccion'],
@@ -62,18 +65,21 @@ def gestion_cliente_json_view(request):
                 descripcion = info_cliente['descripcion'],
             )
             state='success'
+            cliente_id = None
             messages=[]
             if nuevo_cliente is None:
                 state='error'
                 messages.append({'type': 'Error', 'text': 'El cliente ya ha sido creado'})
-                print ''
+            else:
+                cliente_id = nuevo_cliente.id
             return JsonResponse({
                 'state':state,
                 'messages':messages,
+                'cliente_id':cliente_id,
             })
         if post_dic['opcion'] == 'EDICION':
             info_cliente = post_dic['data']
-            cliente = f_cliente.obtener_cliente(info_cliente['id'])
+            cliente = ManagerCliente.obtener_cliente(info_cliente['id'])
             if cliente is None or not( cliente.rut == info_cliente['rut'] and cliente.digito_verificador == info_cliente['dv']):
                 return JsonResponse({
                     'state':'error',
@@ -85,7 +91,7 @@ def gestion_cliente_json_view(request):
                     fecha_nacimiento = datetime.date(datetime.strptime(info_cliente['fecha_nacimiento'], "%d-%m-%Y"))
                 except Exception, e:
                     print '',e
-            cliente = f_cliente.editar_cliente (
+            cliente = ManagerCliente.editar_cliente (
                 cliente_id = info_cliente['id'],
                 nombres = info_cliente['nombres'],
                 apellidos = info_cliente['apellidos'],
@@ -107,11 +113,48 @@ def gestion_cliente_json_view(request):
         'messages':[{'type': 'Error', 'text': 'Problemas al crear el cliente'}]
     })
 
+
 @login_required
-def lista_view(request):
+def view_lista_cliente(request):
     context = {}
-    context['clientes'] = f_cliente.obtener_clientes()
-    return render(request, ClienteConfig.name+'/lista.html', context)
+    context['imprimir_cliente'] = None
+    #context['clientes'] = ManagerCliente.obtener_clientes()
+    if request.GET.get('imprimir_cliente'):
+        context['imprimir_cliente'] = request.GET.get('imprimir_cliente')
+    return render(request, ClienteConfig.name+'/lista_clientes.html', context)
+
+
+@login_required
+def json_lista_cliente(request):
+    respuesta = {}
+    columnas = []
+    columnas.append({'title':'Rut', 'data':'rut'});
+    columnas.append({'title':'Nombres', 'data':'nombres'});
+    columnas.append({'title':'Apellidos', 'data':'apellidos'});
+    columnas.append({'title':'Fecha de nacimiento', 'data':'nacimiento'});
+    columnas.append({'title':'Dirección', 'data':'direccion'});
+    columnas.append({'title':'Email', 'data':'email'});
+    columnas.append({'title':'Teléfono', 'data':'telefono'});
+    columnas.append({'title':'Acciones', 'data':'acciones'});
+
+    clientes = ManagerCliente.obtener_clientes()
+    data_table = []
+    for item in clientes:
+        aux = {}
+        aux['rut'] = unicode(item.rut)+'-'+unicode(item.digito_verificador)
+        aux['nombres'] = item.nombres
+        aux['apellidos'] = item.apellidos
+        aux['nacimiento'] = unicode(item.fecha_nacimiento)
+        aux['direccion'] = unicode(item.pais)+','+unicode(item.ciudad)+','+unicode(item.direccion)
+        aux['email'] = item.email
+        aux['telefono'] = item.telefono
+        aux['acciones'] = '<table  style ="width:100%; border:0px; padding:0px;"><tbody><tr><td style="width:50%; border:0px; padding:0px;"><button name="pdf_ficha" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">print</i></button></td><td style="width:50%; border:0px; padding:0px;"><button name="editar_cliente"   cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">edit</i></button></td></tr></tbody></table>'
+        data_table.append(aux)
+
+    respuesta['data']=data_table
+    respuesta['columnas'] = columnas
+    return JsonResponse(respuesta)
+
 
 @login_required
 def json_pdf_ficha_ingreso(request):
@@ -121,9 +164,9 @@ def json_pdf_ficha_ingreso(request):
         styles=None
         images=None
         if request.POST.has_key('cliente'):
-            cliente = f_cliente.obtener_cliente(request.POST.get('cliente'))
+            cliente = ManagerCliente.obtener_cliente(request.POST.get('cliente'))
             full_name = cliente.nombres+' '+cliente.apellidos
-            rut = str(cliente.rut)+'-'+str(cliente.digito_verificador)
+            rut = unicode(cliente.rut)+'-'+unicode(cliente.digito_verificador)
             content, styles, images = templates_pdf.ficha_ingreso(
                 nombre=full_name,
                 rut=rut, 
@@ -145,3 +188,4 @@ def json_pdf_ficha_ingreso(request):
         'state':'error',
         'messages':[{'type': 'Error', 'text': 'Petición corrupta'}]
     })
+
