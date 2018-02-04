@@ -19,7 +19,9 @@ function blockpage(p1){
     }
 }
 
-
+function removeLoadBase(){
+    $('#loading_').remove();
+}
 /**
  * Resize function without multiple trigger
  * 
@@ -30,7 +32,6 @@ function blockpage(p1){
  */
 (function($){
     $(document).ready(function() {
-        console.log('activando');
         var flag = true
         var a = $('div[class=menu]').find("a[href$='" + location.pathname + "']")
         a.addClass('toggled')
@@ -56,6 +57,8 @@ function blockpage(p1){
         if (activado.length == 0){
             $('li[id=index]').addClass('active');
         }
+        removeLoadBase();
     })
 })(jQuery);
+
 

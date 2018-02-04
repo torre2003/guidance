@@ -27,7 +27,7 @@
              }
          } 
     });
-
+    var _loading = '<div name="loading" class="preloader pl-size-xs"><div class="spinner-layer pl-indigo"><div class="circle-clipper left"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div>'
     // Inicia el datatable.
     var _sparseDataTable = {
         params: {
@@ -62,7 +62,9 @@
             $.extend(this.params, params);
             this.$padreTabla = $(this.params.selector).parent();
             this.tablaOriginal = this.$padreTabla.html();
-
+            var _tabla = $("#" + this.params.ajaxData.id);
+            if (_tabla.length > 0)
+                var content = _tabla.parent().parent().append(_loading)
             $.ajax({
                 async: false,
                 url : this.params.url, // the endpoint
@@ -105,7 +107,12 @@
                     $('.content-wrapper').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
                         " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
                     console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-                }
+                },
+                complete: function() {
+                    if (_tabla.length > 0){
+                        _tabla.parent().parent().find("div[name=loading]").remove()
+                    }
+                },
             });
 
             return this;
