@@ -24,7 +24,7 @@
                     Lista de potenciales clientes
                 </h2>
             </div>
-            <div class="body">
+            <div id="contenedor_lista"class="body">
                 {% div_dataTable 'idTabla' %} 
             </div>
         </div>
@@ -97,6 +97,42 @@
   </div>
 </div>
 <!-- ./ Modal edición cliente -->
+<!-- Modal Log -->
+<div class="modal fade" id="modal_log" cliente="0" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="width:80%">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2><i class="material-icons">info</i>Registro de cambios
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <i class="material-icons">close</i>
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="container_tabla_log"class="body">
+                        {% div_dataTable 'tabla_log_id' %}
+<!--
+                        <div class="table-responsive">
+                          <table id="tabla_log" class="table responsive table-hover table-striped dataTable js-exportable"></table>
+                        </div>
+-->
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <!--
+      <div class="modal-footer">
+        <button id="enviar_editar_cliente" class="btn btn-primary waves-effect" >Ingresar</button>
+      </div>
+        -->
+    </div>
+  </div>
+</div>
+<!-- ./ Modal log -->
 {% endblock %}
 
 
@@ -105,6 +141,7 @@
 
 <!-- Jquery Validation Plugin Css -->
 <script src="{% static '/plugins/jquery-validation/jquery.validate.js' %}"></script>
+<script src="{% static '/base/js/DjangoAjax.js' %}"></script>
 <script>
 $.validator.setDefaults({
   debug: true,
@@ -168,13 +205,18 @@ $(function () {
 });
 </script>
 
-
+{% django_ajax %}
 <script>
+    
     var params = {
-        url : "{% url 'cliente:lista-potencial-cliente-json' %}", 
-        data: {}
+        id:'idTabla',
+        url : "{% url 'cliente:lista-potencial-cliente-json' %}",
+        ajaxData : {'param_1':1},
+        setAllButtons:true,
+        ajax:true,
+
       };
-    var sparseTabla = sparseDataTable.iniciar(params);
+    var sparseTabla = $('#contenedor_lista').sparseDataTable(params);
 
 
     function ajaxGestionPotencialCliente (opcion, potencial_cliente=null){
@@ -215,7 +257,8 @@ $(function () {
                         break;
                     case 'EDICION':
                     case 'NUEVO':
-                        sparseTabla.recargar();
+
+                        sparseTabla.recargar(params);
                         $('#modal_potencial_cliente').modal('toggle');
                         mensaje = "Editado correctamente.";
                         if (opcion == 'NUEVO')
@@ -244,6 +287,77 @@ $(function () {
                   icon: "error",
             });
             blockpage(false)
+        });
+    }
+
+    var sparseTabla_log = null;
+    // var sparseTabla_log = $('#container_tabla_log').sparseDataTable(params_log);
+
+    
+    
+    function ajaxDataLog(modelo, modelo_id){
+        $.ajax({
+            async:true,
+            method: "POST",
+            url: "{% url 'cliente:log-json' %}",
+            data: {
+                modelo:modelo,
+                modelo_id:modelo_id
+            }
+        }).done(function( response ) {
+            console.log(response);
+            if (response.state == 'success'){
+                if (response.data.length == 0 ){
+                    swal({
+                        title: "Información",
+                        text: "No hay registros asociados.",
+                        icon: "info"
+                    });
+                    return
+                }
+                var params_log = {
+                    id:'tabla_log_id',
+                    // clases:' content ',
+                    data:response.data,
+                    columnas:response.columnas,
+                    "paging": false,
+                    searching:false,
+                    "autoWidht": false,
+                }
+                /*
+                var params_2 = {
+                    id: "tabla_log",
+                    ajaxData: {
+                        id: "tabla_log",
+                    },
+                    data: response.data,
+                    columnas: response.columnas,
+                    selector:'#container_tabla_log',
+                    buttons:[],
+                    "paging": true,
+                    searching:false,
+                };
+                */
+                if (sparseTabla_log == null)
+                    sparseTabla_log = $("#container_tabla_log").sparseDataTable(params_log);
+                else
+                    sparseTabla_log.recargar(params_log);
+                $('#modal_log').modal('toggle');
+            }
+            else 
+                swal({
+                    title: "Información",
+                    text: response.messages[0].text,
+                    icon: response.messages[0].state
+                });
+
+        }).fail(function(response) {
+            console.log(response);
+            swal({
+                  title: "Servidor",
+                  text: "Error en la petición",
+                  icon: "error"
+            });
         });
     }
 
@@ -294,6 +408,13 @@ $(function () {
     $(document).on('click',"button[name=editar]" ,function() {
             potencial_cliente = $(this).attr('potencial_cliente')
             mostrarModalEditarPotencialCliente(potencial_cliente)
+        }
+    );
+
+        //Evento ver log
+    $(document).on('click',"button[name=log]" ,function() {
+            var potencial_cliente = $(this).attr('potencial_cliente')
+            ajaxDataLog('potencial_cliente',potencial_cliente);
         }
     );
 

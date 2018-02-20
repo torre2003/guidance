@@ -39,7 +39,7 @@ def json_lista_potencial_cliente(request):
         aux['telefono'] = unicode(item.telefono)
         aux['nacionalidad'] = item.nacionalidad
         aux['descripcion'] = item.descripcion
-        aux['acciones'] = '<table  style ="width:100%; border:0px; padding:0px;"><tbody><tr><td style="width:50%; border:0px; padding:0px;"><button name="editar"   potencial_cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">edit</i></button></td></tr></tbody></table>'
+        aux['acciones'] = '<table  style ="width:100%; border:0px; padding:0px;"><tbody><tr><td style="width:50px; border:0px; padding:0px;"><button name="log" potencial_cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">info</i></button></td><td style="width:50%; border:0px; padding:0px;"><button name="editar"   potencial_cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">edit</i></button></td></tr></tbody></table>'
         data_table.append(aux)
 
     respuesta['data']=data_table
@@ -77,7 +77,9 @@ def json_gestion_potencial_cliente(request):
                 email = info_potencial_cliente['email'] if info_potencial_cliente['email'] != '' else '',
                 telefono = info_potencial_cliente['telefono'],
                 nacionalidad = info_potencial_cliente['nacionalidad'],
-                descripcion = info_potencial_cliente['descripcion'])
+                descripcion = info_potencial_cliente['descripcion'],
+                user_id = request.user.id,
+            )
             state='success'
             messages=[]
             return JsonResponse({
@@ -100,6 +102,7 @@ def json_gestion_potencial_cliente(request):
                 telefono=info_potencial_cliente['telefono'],
                 nacionalidad=info_potencial_cliente['nacionalidad'],
                 descripcion=info_potencial_cliente['descripcion'],
+                user_id=request.user.id,
             )
             return JsonResponse({
                 'state':'success',

@@ -1,131 +1,158 @@
-;(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery')) :
-    typeof define === 'function' && define.amd ? define(['jquery'], factory) :
-    global.sparseGrafico = factory(global.jQuery)
-}(this, function ($) {
-    // Codigo necesario para permitir peticiones ajax.
-    $.ajaxSetup({ 
-         beforeSend: function(xhr, settings) {
-             function getCookie(name) {
-                 var cookieValue = null;
-                 if (document.cookie && document.cookie != '') {
-                     var cookies = document.cookie.split(';');
-                     for (var i = 0; i < cookies.length; i++) {
-                         var cookie = jQuery.trim(cookies[i]);
-                         // Does this cookie string begin with the name we want?
-                         if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                             break;
-                         }
-                     }
-                 }
-                 return cookieValue;
-             }
-             if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-                 // Only send the token to relative URLs i.e. locally.
-                 xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-             }
-         } 
-    });
+;( function( $, window, undefined ) {
+    
+    'use strict';
 
-    // Inicia el datatable.
-    var _sparseGrafico = {
-        params: {
-            tipo: "morris_area", // tipo de grafico.
-            selector: ".contenedor-grafico", 
-            id: "grafico-area", 
-            clases: "", 
-            titulo: "Grafico",
-            resize: true,
-            data: [],
-            xkey: 'y',
-            ykeys: ['item1', 'item2'],
-            labels: ['Item 1', 'Item 2'],
-            lineColors: ['#a0d0e0', '#3c8dbc'],
-            hideHover: 'auto',
-            agregar: true // indica si se debe agregar el grafico al elemento.
+    var $event = $.event,
+    $special,
+    resizeTimeout;
+
+    // global
+    var $window = $( window ),
+        $document = $( document ),
+        Modernizr = window.Modernizr;
+
+    $.SparseGrafico = function( options, element ) {
+        this.$elWrapper = $(element);
+        this._init( options );
+    };
+
+    $.SparseGrafico.defaults = {
+        // elemento contendor donde se pondra el grafico.
+        contenedor: ".contenedor-grafico", 
+        // id del grafico.
+        id: "grafico-linea", 
+        // clases extras para el grafico.
+        clases: "", 
+        // titulo del box que contiene el grafico.
+        titulo: "Grafico",
+        // parametro con los datos para el grafico chartjs.
+        chartjs: {},
+        // parametro con los datos para el grafico flot.
+        flot: { params: {}, data: [] },
+        // indica si se debe agregar el grafico al elemento contenedor (de lo contrario  
+        // borra su contenido y agrega el grafico).
+        agregar: true, 
+    };
+
+    $.SparseGrafico.prototype = {
+        _init : function( options ) {
+            // options
+            this.options = $.extend( true, {}, $.SparseGrafico.defaults, options );
+
+            this.agregarElemento(this.elemento());
+            this.cargar();
         },
 
-        $el: null, // el elemento con los filtros.
+        elemento: function() {
+            var grafico = "";
 
-        iniciar: function (params = {}) {
-            $.extend(this.params, params);
-            console.log(this.params);
+            grafico +=   '<div class="grafico ' + this.options.clases + '">\
+                               <div class="box box-primary">\
+                                    <div class="box-header with-border">\
+                                        <h5 class="box-title">' + this.options.titulo + '</h5>\
+                                    </div>\
+                                    <div class="box-body chart-responsive">';
 
-            $.ajax({
-                async: false,
-                url : "/common/grafico/", // the endpoint
-                type : "POST", // http method
-                data : { 
-                    "id": this.params.id, 
-                    "clases": this.params.clases, 
-                    "titulo": this.params.titulo, 
-                },
-                context : this, // hacemos el objeto accesible desde las funciones de ajax.
-                // handle a successful response
-                success : function(json) {
-                    var $el = $(this.params.selector);
+            if ( !$.isEmptyObject(this.options.chartjs) ) {
+                grafico += '<canvas id="' + this.options.id + '" height="165px"></canvas>';
+            } else if ( !$.isEmptyObject(this.options.flot.params) ) {
+                grafico += '<div id="' + this.options.id + '" class="flot-chart" style="height: 300px;"></div>';
+            }
+            
+            grafico += '</div></div></div>'; // etiquetas de cierre del box.
 
-                    if (this.params.agregar) {
-                        $el.append(json);
-                    } else {
-                        $el.html(json);
-                    }
+            return grafico;
+        },
 
-                    if ( this.params.tipo == "morris_area" ) {
-                        var area = new Morris.Area({
-                          element: this.params.id,
-                          resize: this.params.reize,
-                          data: this.params.data,
-                          xkey: this.params.xkey,
-                          ykeys: this.params.ykeys,
-                          labels: this.params.labels,
-                          lineColors: this.params.lineColors,
-                          hideHover: this.params.hideHover
-                        });
-                    } else if ( this.params.tipo == "morris_linea" ) {
-                        var line = new Morris.Line({
-                          element: this.params.id,
-                          resize: this.params.reize,
-                          data: this.params.data,
-                          xkey: this.params.xkey,
-                          ykeys: this.params.ykeys,
-                          labels: this.params.labels,
-                          lineColors: this.params.lineColors,
-                          hideHover: this.params.hideHover
-                        });
-                    } else if ( this.params.tipo == "morris_donut" ) {
-                        var donut = new Morris.Donut({
-                          element: this.params.id,
-                          resize: this.params.reize,
-                          colors: this.params.colors,
-                          data: this.params.data,
-                          hideHover: this.params.hideHover
-                        });
-                    } else if ( this.params.tipo == "morris_barra" ) {
-                        var bar = new Morris.Bar({
-                          element: this.params.id,
-                          resize: this.params.reize,
-                          data: this.params.data,
-                          barColors: this.params.barColors,
-                          xkey: this.params.xkey,
-                          ykeys: this.params.ykeys,
-                          labels: this.params.labels,
-                          hideHover: this.params.hideHover
-                        });
-                    }
-                },
-                // handle a non-successful response
-                error : function(xhr,errmsg,err) {
-                    $('.content-wrapper').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
-                        " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
-                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+        agregarElemento: function( grafico ) {
+            if ($("#"+this.options.id).length == 0) {
+                if ( this.options.agregar ) {
+                    $(this.$elWrapper).append(grafico);
+                } else {
+                    $(this.$elWrapper).html(grafico);
                 }
-            });
+            }
+        },
 
-            return this;
+        cargar: function() {
+            this.$grafico = $("#" + this.options.id);
+            this.$padreGrafico = this.$grafico.parent();
+            this.graficoOriginal = this.$padreGrafico.html();
+
+            if ( !$.isEmptyObject(this.options.chartjs) ) {
+                new Chart($("#" + this.options.id)[0].getContext("2d"), this.options.chartjs);
+            }
+            else if ( !$.isEmptyObject(this.options.flot.params) ) {
+                $.plot($("#" + this.options.id), this.options.flot.data, this.options.flot.params);
+            }
+        },
+
+        recargar: function(params = {}) {   
+            this.$padreGrafico.html("");
+            this.$padreGrafico.append(this.graficoOriginal);
+            this._init(params);
         },
     };
-    
-    return _sparseGrafico;
-}));
+
+    var logError = function( message ) {
+
+        if ( window.console ) {
+
+            window.console.error( message );
+        
+        }
+
+    };
+
+    $.fn.sparseGrafico = function( options ) {
+        var self = $.data( this, 'sparseGrafico' );
+
+        if ( typeof options === 'string' ) {
+            
+            var args = Array.prototype.slice.call( arguments, 1 );
+            
+            this.each(function() {
+            
+                if ( !self ) {
+
+                    logError( "cannot call methods on sparseGrafico prior to initialization; " +
+                    "attempted to call method '" + options + "'" );
+                    return;
+                
+                }
+                
+                if ( !$.isFunction( self[options] ) || options.charAt(0) === "_" ) {
+
+                    logError( "no such method '" + options + "' for sparseGrafico self" );
+                    return;
+                
+                }
+                
+                self[ options ].apply( self, args );
+            
+            });
+        
+        } 
+        else {
+        
+            this.each(function() {
+                
+                if ( self ) {
+
+                    self._init();
+                
+                }
+                else {
+
+                    self = $.data( this, 'sparseGrafico', new $.SparseGrafico( options, this ) );
+                
+                }
+
+            });
+        
+        }
+        
+        return self;
+    };
+
+} )( jQuery, window );

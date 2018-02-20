@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import json
 from django.db import models
-
+from django.contrib.auth.models import User
 
 class Cliente(models.Model):
-    nombres = models.CharField(max_length=200, verbose_name='Nombres')
+    nombres = models.CharField(max_length=202, verbose_name='Nombres')
     apellidos = models.CharField(max_length=200, verbose_name='Apellidos')
     direccion = models.CharField(max_length=300, verbose_name='Dirección')
     ciudad = models.CharField(max_length=100, verbose_name='Ciudad')
@@ -26,3 +26,46 @@ class PotencialCliente(models.Model):
     nacionalidad = models.CharField(max_length=100, verbose_name='Nacionalidad')
     descripcion = models.CharField(max_length=500, verbose_name='Descripción', null=True)
     fecha = models.DateField(auto_now_add=True)
+
+
+class Log(models.Model):
+    CLIENTE = 'cl'
+    POTENCIAL_CLIENTE = 'pcl'
+    MODELOS = (
+        (CLIENTE, 'Cliente'),
+        (POTENCIAL_CLIENTE, 'PotencialCliente'),
+    )
+    fecha = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, models.DO_NOTHING)
+    modelo = models.CharField(
+        max_length=4,
+        choices=MODELOS,
+    )
+    modelo_id = models.PositiveIntegerField()
+    _info = models.TextField(max_length=500, default='{}')
+
+    def get_info(self):
+        return json.loads(self._info)
+
+    def set_info(self, value):
+        self._info = json.dumps(value, ensure_ascii=False)
+
+    info = property(get_info, set_info)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

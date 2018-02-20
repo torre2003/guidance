@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from datetime import datetime
-from cliente.models import Cliente, PotencialCliente
+from cliente.models import Cliente, PotencialCliente, Log
 
 
 
@@ -60,7 +60,8 @@ class ManagerCliente():
 
 
     @staticmethod
-    def crear_cliente (nombres, apellidos, direccion, ciudad, pais, email, sexo, telefono, rut, digito_verificador, fecha_nacimiento = None, descripcion=''):
+    def crear_cliente (nombres, apellidos, direccion, ciudad, pais, email, sexo, telefono, rut,
+                    digito_verificador, fecha_nacimiento = None, descripcion='', user_id=None):
         """
             Función que ingresa un nuevo cliente
             Param:
@@ -75,6 +76,7 @@ class ManagerCliente():
                 rut=rut,
                 digito_verificador=digito_verificador,
                 descripcion=descripcion,
+                user_id: si el usuario esta seteado se creara un log asociado a él
             Return:
                 Cliente
                 None en caso de existir el cliente en la base de datos
@@ -96,11 +98,20 @@ class ManagerCliente():
             descripcion=descripcion,
         )
         aux_cliente.save()
+        if user_id:
+            ManagerLog.crear_log(
+                user_id=user_id,
+                tipo_modelo=type(aux_cliente),
+                modelo_id=aux_cliente.id, 
+                info={'accion':'creación'}
+            )
         return aux_cliente
 
 
     @staticmethod
-    def editar_cliente (cliente_id, rut=None, digito_verificador=None, nombres=None, apellidos=None, direccion=None, ciudad=None, pais=None, email=None, sexo=None, telefono=None, fecha_nacimiento = '', descripcion=None):
+    def editar_cliente (cliente_id, rut=None, digito_verificador=None, nombres=None, apellidos=None,
+                        direccion=None, ciudad=None, pais=None, email=None, sexo=None, telefono=None,
+                        fecha_nacimiento = '', descripcion=None, user_id=None):
         """
             Función para editar un cliente ya ingresado en la base de datos
             Param:
@@ -117,6 +128,7 @@ class ManagerCliente():
                 telefono
                 fecha_nacimiento
                 descripcion
+                user_id: si el usuario esta seteado se creara un log asociado a él
             Return:
                 Cliente
                 None en caso de NO existir el cliente en la base de datos
@@ -124,31 +136,65 @@ class ManagerCliente():
         cliente = ManagerCliente.obtener_cliente(cliente_id)
         if cliente is None:
             return None
+        info = {}
         if rut:
-            cliente.rut = rut
+            if cliente.rut != rut:
+                cliente.rut = rut
+                info['rut'] = rut
         if digito_verificador:
-            cliente.digito_verificador = digito_verificador
+            if cliente.digito_verificador != digito_verificador:
+                cliente.digito_verificador = digito_verificador
+                cliente.digito_verificador = digito_verificador
+                info['digito_verificador'] = digito_verificador
         if nombres:
-            cliente.nombres = nombres
+            if cliente.nombres != nombres:
+                cliente.nombres = nombres
+                info['nombres'] = nombres
         if apellidos:
-            cliente.apellidos = apellidos
+            if cliente.apellidos != apellidos:
+                cliente.apellidos = apellidos
+                info['apellidos'] = apellidos
         if direccion:
-            cliente.direccion = direccion
+            if cliente.direccion != direccion:
+                cliente.direccion = direccion
+                info['direccion'] = direccion
         if ciudad:
-            cliente.ciudad = ciudad
+            if cliente.ciudad != ciudad:
+                cliente.ciudad = ciudad
+                info['ciudad'] = ciudad
         if pais:
-            cliente.pais = pais
+            if cliente.pais != pais:
+                cliente.pais = pais
+                info['pais'] = pais
         if email:
-            cliente.email = email
+            if cliente.email != email:
+                cliente.email = email
+                info['email'] = email
         if sexo:
-            cliente.sexo = sexo
+            if cliente.sexo != sexo:
+                cliente.sexo = sexo
+                info['sexo'] = sexo
         if telefono:
-            cliente.telefono = telefono
+            if cliente.telefono != telefono:
+                cliente.telefono = telefono
+                info['telefono'] = telefono
         if fecha_nacimiento != '':
-            cliente.fecha_nacimiento = fecha_nacimiento
+            if cliente.fecha_nacimiento != fecha_nacimiento:
+                cliente.fecha_nacimiento = fecha_nacimiento
+                info['fecha_nacimiento'] = unicode(fecha_nacimiento)
         if descripcion:
-            cliente.descripcion = descripcion
+            if cliente.descripcion != descripcion:
+                cliente.descripcion = descripcion
+                info['descripcion'] = descripcion
         cliente.save()
+        if user_id:
+            info['accion']=u'modificación'
+            ManagerLog.crear_log(
+                user_id=user_id,
+                tipo_modelo=type(cliente),
+                modelo_id=cliente.id, 
+                info=info
+            )
         return cliente
 
 class ManagerPotencialCliente():
@@ -185,7 +231,7 @@ class ManagerPotencialCliente():
 
 
     @staticmethod
-    def crear_potencial_cliente (nombre_completo, email, telefono, nacionalidad, descripcion):
+    def crear_potencial_cliente (nombre_completo, email, telefono, nacionalidad, descripcion, user_id=None):
         """
             Función que ingresa un nuevo potencial cliente
             Param:
@@ -194,6 +240,7 @@ class ManagerPotencialCliente():
                 telefono=telefono,
                 nacionalidad=nacionalidad,
                 descripcion=descripcion,
+                user_id(Opcional): si se especifica la id de usuario, se creara un Log asociada a él
             Return:
                 PotencialCliente
                 None en caso de existir el cliente en la base de datos
@@ -206,11 +253,18 @@ class ManagerPotencialCliente():
             descripcion=descripcion
         )
         aux_potencial_cliente.save()
+        if user_id:
+            ManagerLog.crear_log(
+                user_id=user_id,
+                tipo_modelo=type(aux_potencial_cliente),
+                modelo_id=aux_potencial_cliente.id, 
+                info={'accion':'creación'}
+            )
         return aux_potencial_cliente
 
 
     @staticmethod
-    def editar_potencial_cliente (potencial_cliente_id, nombre_completo=None, email=None, telefono=None, nacionalidad=None, descripcion=None):
+    def editar_potencial_cliente (potencial_cliente_id, nombre_completo=None, email=None, telefono=None, nacionalidad=None, descripcion=None, user_id=None):
         """
             Función modificar un potencial cliente ya ingresado en la base de datos
             Param:
@@ -220,6 +274,7 @@ class ManagerPotencialCliente():
                 telefono(Opcional)
                 nacionalidad(Opcional)
                 descripcion(Opcional)
+                user_id(Opcional): si se especifica la id de usuario, se creara un Log asociada a él
             Return:
                 PotencialCliente
                 None en caso de NO existir el potencial cliente en la base de datos
@@ -227,15 +282,106 @@ class ManagerPotencialCliente():
         potencial_cliente = ManagerPotencialCliente.obtener_potencial_cliente(potencial_cliente_id)
         if potencial_cliente is None:
             return None
+        info = {}
         if nombre_completo:
-            potencial_cliente.nombre_completo = nombre_completo
+            if potencial_cliente.nombre_completo != nombre_completo:
+                potencial_cliente.nombre_completo = nombre_completo
+                info['nombre_completo'] = nombre_completo
         if email:
-            potencial_cliente.email = email
+            if potencial_cliente.email != email:
+                potencial_cliente.email = email
+                info['email'] = email
         if telefono:
-            potencial_cliente.telefono = telefono
+            if potencial_cliente.telefono != telefono:
+                potencial_cliente.telefono = telefono
+                info['telefono'] = telefono
         if nacionalidad:
-            potencial_cliente.nacionalidad = nacionalidad
+            if potencial_cliente.nacionalidad != nacionalidad:
+                potencial_cliente.nacionalidad = nacionalidad
+                info['nacionalidad'] = nacionalidad
         if descripcion:
-            potencial_cliente.descripcion = descripcion
+            if potencial_cliente.descripcion != descripcion:
+                potencial_cliente.descripcion = descripcion
+                info['descripcion'] = descripcion
         potencial_cliente.save()
+        if user_id:
+            info['accion'] = 'modificación'
+            ManagerLog.crear_log(
+                user_id=user_id,
+                tipo_modelo=type(potencial_cliente),
+                modelo_id=potencial_cliente.id, 
+                info=info
+            )
         return potencial_cliente
+
+
+class ManagerLog():
+
+    @staticmethod
+    def crear_log(user_id, tipo_modelo, modelo_id, info):
+        """
+            Función para crear un log de Cliente o PotencialCliente
+            Params:
+                user_id: id del usuario asociado al registro
+                tipo_modelo(type): se espera un objeto type del modelo Cliente o PotencialCliente
+                modelo_id: id del objeto trabajado
+                info: diccionario o lista compatible json
+            Returns:
+                Log
+        """
+        log = Log()
+        log.user_id = user_id
+        print tipo_modelo
+        print type(Cliente())
+        print type(PotencialCliente())
+        if tipo_modelo == type(Cliente()):
+            log.modelo = Log.CLIENTE
+        if tipo_modelo == type(PotencialCliente()):
+            log.modelo = Log.POTENCIAL_CLIENTE
+        log.modelo_id = modelo_id
+        log.info = info
+        print log.__dict__
+        log.save()
+        return log
+
+    @staticmethod
+    def obtener_log(log_id):
+        """
+            Función que obtiene un log especifico
+            Param:
+                log_id: id del log a buscar
+            Return:
+                Log
+                None en caso de no existir el Log
+        """
+        try:
+            return Log.objects.get(id=log_id)
+        except Exception,e:
+            return None
+
+    @staticmethod
+    def obtener_logs(**kwargs):
+        """
+            Función para obtener un conjunto de logs según los criterios especificados
+            Params:
+                user_id(int): id del usuario asociado a los registro
+                tipo_modelo(type): se espera un objeto type del modelo Cliente o PotencialCliente
+                modelo_id[int]: id de objeto buscados
+                modelo_ids[int]: ids del objeto buscados
+            QuerySet<Log>
+        """
+        logs = Log.objects.all()
+        if 'user_id' in kwargs:
+            logs = logs.filter(user_id__in=kwargs['user_id'])
+        if 'tipo_modelo' in kwargs:
+            tipo = ''
+            if kwargs['tipo_modelo'] == type(Cliente()):
+                tipo = Log.CLIENTE
+            if kwargs['tipo_modelo'] == type(PotencialCliente()):
+                tipo = Log.POTENCIAL_CLIENTE
+            logs = logs.filter(modelo=tipo)
+        if 'modelo_id' in kwargs:
+            logs = logs.filter(modelo_id=kwargs['modelo_id'])
+        if 'modelo_ids' in kwargs:
+            logs = logs.filter(modelo_id__in=kwargs['modelo_ids'])
+        return logs

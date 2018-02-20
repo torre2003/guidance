@@ -3,6 +3,7 @@ from django.conf.urls import url
 from apps import ClienteConfig
 from . import views
 from . import views_potencial_cliente
+from . import views_log
 
 app_name = ClienteConfig.name
 
@@ -19,7 +20,8 @@ urlpatterns = [
     url(r'^lista_potencial_cliente_json/$', views_potencial_cliente.json_lista_potencial_cliente, name='lista-potencial-cliente-json'),
     url(r'^gestion_potencial_cliente_json/$', views_potencial_cliente.json_gestion_potencial_cliente, name='gestion-potencial-cliente-json'),
     
-    
+    #Log
+    url(r'^log_json/$', views_log.json_log, name='log-json'),
 ]
 
 

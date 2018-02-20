@@ -1,129 +1,242 @@
-;(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery')) :
-    typeof define === 'function' && define.amd ? define(['jquery'], factory) :
-    global.sparseDataTable = factory(global.jQuery)
-}(this, function ($) {
-    // Codigo necesario para permitir peticiones ajax.
-    $.ajaxSetup({ 
-         beforeSend: function(xhr, settings) {
-             function getCookie(name) {
-                 var cookieValue = null;
-                 if (document.cookie && document.cookie != '') {
-                     var cookies = document.cookie.split(';');
-                     for (var i = 0; i < cookies.length; i++) {
-                         var cookie = jQuery.trim(cookies[i]);
-                         // Does this cookie string begin with the name we want?
-                         if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                             break;
-                         }
-                     }
-                 }
-                 return cookieValue;
-             }
-             if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-                 // Only send the token to relative URLs i.e. locally.
-                 xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-             }
-         } 
-    });
-    var _loading = '<div name="loading" class="preloader pl-size-xs"><div class="spinner-layer pl-indigo"><div class="circle-clipper left"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div>'
-    // Inicia el datatable.
-    var _sparseDataTable = {
-        params: {
-            url : "/common/datatable/", // url que procesara la peticion ajax.
-            metodo: "POST", // metodo con que se pasaran los datos.
-            ajaxData: {
-                id: "idTabla",
-                clases: "",
-                titulo: "Tabla",
-            }, // datos que seran pasados a la url que procesara la peticion.
-            data: [], // datos que seran pasados a la url que procesara la peticion.
-            columnas: [],
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-            selector: ".dataTable", // selector para obtener el datatable.
-            "lenguaje": {
-                "url": '/static/plugins/datatables/extensions/i18n/spanish.json',
-                "decimal": ",",
-                "thousands": ".",
-            },
-            "lengthMenu": [[10, 20, 50, 100, -1], [10, 20, 50, 100, "Todo"]],
-            "order": [[ 0, "asc" ]],
-            "initComplete": function(settings, json) {},
-            agregar: true, // indica si la tabla debe agregarse al elemento selector.
+
+;( function( $, window, undefined ) {
+    
+    'use strict';
+
+    var $event = $.event,
+    $special,
+    resizeTimeout;
+
+    // global
+    var $window = $( window ),
+        $document = $( document ),
+        Modernizr = window.Modernizr;
+
+    $.SparseDataTable = function( options, element ) {
+        this.$elWrapper = $(element);
+        this._init( options );
+    };
+
+    $.SparseDataTable.defaults = {
+        // id de la tabla.
+        id : "idTabla",
+        // clases adicionales a agregar a la tabla.
+        clases : "",
+        // titulo del box que contiene la tabla.
+        titulo : "",
+        // url que procesara la peticion ajax.
+        url : "", 
+        // datos que seran pasados a la url que procesara la peticion.
+        ajaxData: {}, 
+        // datos que seran pasados a la url que procesara la peticion.
+        data: [], 
+        // columnas de la tabla.
+        columnas: [],
+        // botones con las opciones para exportar la información la tabla.
+        buttons: [],
+        // contenedor donde se colocara el datatable en caso de usar ajax.
+        setAllButtons: false,
+        //contenedor: ".dataTable",
+        // lenguaje para tratar los datos de la tabla. 
+        "lenguaje": {
+            "url": '/static/plugins/datatables/extensions/i18n/spanish.json',
+            "decimal": ",",
+            "thousands": ".",
+        },
+        // opciones para mostrar la cnatidad de elementos de la tabla por pagina.
+        "lengthMenu": [[10, 20, 50, 100, -1], [10, 20, 50, 100, "Todo"]],
+        // orden en que se muestran los datos.
+        "order": [[ 0, "asc" ]],
+        // evento que se llama una vez que la tabla ha sido cargada y mostrada en la pagina.
+        "initComplete": function(settings, json) {},
+        // indica si la tabla debe agregarse al elemento contenedor sin sobreescribir su contenido.
+        agregar: true, 
+        // indica si el elemento (div) para el datatable sera obtenido desde el servidor. 
+        ajax: false,
+        //Indica si la petición ajax es asincrona
+        async: true,
+        //Indica si se debe mostrar la tabla paginada
+        "paging": true,
+        // indica si se debe mostrar el cuadro de busqueda
+        searching:true,
+        // indica si se calcula automaticamente el ancho de las columnas
+        "autoWidht": true,
+    };
+
+    $.SparseDataTable.prototype = {
+        _init : function( options ) {
+            // options
+            this.options = $.extend( true, {}, $.SparseDataTable.defaults, options );
+
+            if ( this.options.ajax ) {
+                // Cargamos la tabla por desde la respuesta del servidor.
+                this.ajax();
+            } else {
+                this.agregarElemento(this.elemento());
+                this.cargar();
+            }
         },
 
-        $tabla: null, // objecto dataTable.
-        $dataTable: null, // objecto dataTable.
-        tablaOriginal: null, // copia de la tabla antes de ser inicia por el dataTable.
-        $padreTabla: null,
-
-        iniciar: function (params = {}) {
-            $.extend(this.params, params);
-            this.$padreTabla = $(this.params.selector).parent();
+        cargar: function() {
+            this.$tabla = $("#" + this.options.id);
+            this.$padreTabla = this.$tabla.parent();
             this.tablaOriginal = this.$padreTabla.html();
-            var _tabla = $("#" + this.params.ajaxData.id);
-            if (_tabla.length > 0)
-                var content = _tabla.parent().parent().append(_loading)
+            if (this.options.setAllButtons)
+                this.options.buttons = ['copy', 'csv', 'excel', 'pdf', 'print']
+            this.DataTable = this.$tabla.DataTable({
+                data: this.options.data,
+                responsive: true,
+                language: this.options.lenguaje,
+                columns: this.options.columnas,
+                dom: 'Blfrtip',
+                buttons: this.options.buttons,
+                "lengthMenu": this.options.lengthMenu,
+                "order": this.options.order,
+                "initComplete": this.options.initComplete,
+                "paging": this.options.paging,
+                searching:this.options.searching,
+                "autoWidth": this.options.autoWidht,
+            });
+        },
+
+        ajax: function() {
+            this.options.ajaxData["id"] = this.options.id;
+            this.options.ajaxData["clases"] = this.options.clases;
+            this.options.ajaxData["titulo"] = this.options.titulo;
+
+            // si el elemento se agrega por ajax, se establece el template que lo renderiza.
+            if ( this.options.url == "" ) {
+                this.options.url = "/common/datatable/";
+            }
+
             $.ajax({
-                async: false,
-                url : this.params.url, // the endpoint
-                type : this.params.metodo, // http method
-                data : this.params.ajaxData, // data sent with the post request
+                async: this.options.async,
+                url : this.options.url, // the endpoint
+                type : "POST", // http method
+                data : this.options.ajaxData, // data sent with the post request
                 context : this, // hacemos el objeto accesible desde las funciones de ajax.
-                // handle a successful response
-                success : function(json) {
-                    var datos = this.params.data, columnas = this.params.columnas;
-
-                    if (this.params.data.length > 0) {
-                        if (this.params.agregar) {
-                            $(this.params.selector).append(json);
-                        } else {
-                            $(this.params.selector).html(json);
-                        }
-                    } else {
-                        datos = json.data;
-                        columnas = json.columnas;
+                success : function(respuesta) {
+                    // asignamos los datos y columnas que fueron retornados en la respuesta.
+                    if ( this.options.data.length == 0 ) {
+                        this.options.data = respuesta.data;
                     }
-                    this.$tabla = $("#" + this.params.ajaxData.id);
-                    console.log(this.$tabla);
 
-                    this.$dataTable = this.$tabla.DataTable({
-                        data: datos,
-                        responsive: true,
-                        language: this.params.lenguaje,
-                        columns: columnas,
-                        dom: 'Blfrtip',
-                        buttons: this.params.buttons,
-                        "lengthMenu": this.params.lengthMenu,
-                        "order": this.params.order,
-                        "initComplete": this.params.initComplete,
-                    });
-                    // $($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+                    if ( this.options.columnas.length == 0 ) {
+                        this.options.columnas = respuesta.columnas;
+                    }
+                    
+                    // if ( respuesta.hasOwnProperty("elemento") ) {
+                    //     this.agregarElemento(respuesta.elemento);
+                    // }
+                    
+                    this.agregarElemento(this.elemento());
+                    this.cargar();
                 },
-
                 // handle a non-successful response
                 error : function(xhr,errmsg,err) {
                     $('.content-wrapper').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
                         " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
                     console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-                },
-                complete: function() {
-                    if (_tabla.length > 0){
-                        _tabla.parent().parent().find("div[name=loading]").remove()
-                    }
-                },
+                }
             });
-
-            return this;
         },
 
-        recargar: function(params = {}) {
+        elemento: function() {
+            var tabla = '<div class="tabla ' + this.options.clases +'">\
+                          <div class="box box-primary">\
+                            <div class="box-header with-border">\
+                              <h5 class="box-title">' + this.options.titulo +'</h5>\
+                            </div>\
+                            <div class="box-body">\
+                              <div class="table-responsive">\
+                                <table id="' + this.options.id + '" class="table responsive table-hover table-striped dataTable js-exportable"></table>\
+                              </div>\
+                            </div>\
+                          </div>\
+                        </div>';
+
+            return tabla;
+        },
+
+        agregarElemento: function( tabla ) {
+            if ($("#"+this.options.id).length == 0) {
+                if (this.options.agregar) {
+                    $(this.$elWrapper).append(tabla);
+                } else {
+                    $(this.$elWrapper).html(tabla);
+                }
+            }
+        },
+
+        recargar: function(params = {}) {   
             this.$padreTabla.html("");
             this.$padreTabla.append(this.tablaOriginal);
-            this.iniciar(params);
-        }
+            this._init(params);
+        },
+
     };
-    
-    return _sparseDataTable;
-}));
+
+    var logError = function( message ) {
+
+        if ( window.console ) {
+
+            window.console.error( message );
+        
+        }
+
+    };
+
+    $.fn.sparseDataTable = function( options ) {
+        var self = $.data( this, 'sparseDataTable' );
+
+        if ( typeof options === 'string' ) {
+            
+            var args = Array.prototype.slice.call( arguments, 1 );
+            
+            this.each(function() {
+            
+                if ( !self ) {
+
+                    logError( "cannot call methods on sparseDataTable prior to initialization; " +
+                    "attempted to call method '" + options + "'" );
+                    return;
+                
+                }
+                
+                if ( !$.isFunction( self[options] ) || options.charAt(0) === "_" ) {
+
+                    logError( "no such method '" + options + "' for sparseDataTable self" );
+                    return;
+                
+                }
+                
+                self[ options ].apply( self, args );
+            
+            });
+        
+        } 
+        else {
+        
+            this.each(function() {
+                
+                if ( self ) {
+
+                    self._init();
+                
+                }
+                else {
+
+                    self = $.data( this, 'sparseDataTable', new $.SparseDataTable( options, this ) );
+                
+                }
+
+            });
+        
+        }
+        
+        return self;
+    };
+
+
+
+} )( jQuery, window );

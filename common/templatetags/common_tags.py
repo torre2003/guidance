@@ -8,6 +8,11 @@ register = template.Library()
 def cod_menu():
     return {}
 
+
+@register.inclusion_tag("common/tag_django_ajax.html")
+def django_ajax():
+    return {}
+
 @register.inclusion_tag("common/source-datatable.html")
 def css_dataTable():
     """
@@ -19,7 +24,6 @@ def css_dataTable():
         clase = Agrega clase/s extra/s al elemento <table>.
         identificador = Agrega un id al elemento <table>.
     """
-
     context = {}
     context['source'] = "css"
     return context

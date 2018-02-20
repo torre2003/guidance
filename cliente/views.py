@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 import json
 
 from . import templates_pdf
-from framework import ManagerCliente
+from framework import ManagerCliente, ManagerLog
 from apps import ClienteConfig
 
 
@@ -63,6 +63,7 @@ def json_gestion_cliente(request):
                 rut = info_cliente['rut'],
                 digito_verificador = info_cliente['dv'],
                 descripcion = info_cliente['descripcion'],
+                user_id=request.user.id,
             )
             state='success'
             cliente_id = None
@@ -103,6 +104,7 @@ def json_gestion_cliente(request):
                 sexo = info_cliente['gender'],
                 telefono = info_cliente['telefono'],
                 descripcion = info_cliente['descripcion'],
+                user_id = request.user.id,
             )
             return JsonResponse({
                 'state':'success',
@@ -148,7 +150,7 @@ def json_lista_cliente(request):
         aux['direccion'] = unicode(item.pais)+','+unicode(item.ciudad)+','+unicode(item.direccion)
         aux['email'] = item.email
         aux['telefono'] = item.telefono
-        aux['acciones'] = '<table  style ="width:100%; border:0px; padding:0px;"><tbody><tr><td style="width:50%; border:0px; padding:0px;"><button name="pdf_ficha" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">print</i></button></td><td style="width:50%; border:0px; padding:0px;"><button name="editar_cliente"   cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">edit</i></button></td></tr></tbody></table>'
+        aux['acciones'] = '<table  style ="width:100%; border:0px; padding:0px;"><tbody><tr><td style="width:50px; border:0px; padding:0px;"><button name="log" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">info</i></button></td><td style="width:50px; border:0px; padding:0px;"><button name="pdf_ficha" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">print</i></button></td><td style="width:50px; border:0px; padding:0px;"><button name="editar_cliente"   cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">edit</i></button></td></tr></tbody></table>'
         data_table.append(aux)
 
     respuesta['data']=data_table
@@ -188,4 +190,3 @@ def json_pdf_ficha_ingreso(request):
         'state':'error',
         'messages':[{'type': 'Error', 'text': 'Petición corrupta'}]
     })
-
