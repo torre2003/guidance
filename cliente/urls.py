@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import url
+from django.conf.urls import url, include
 from apps import ClienteConfig
 from . import views
 from . import views_potencial_cliente
@@ -22,6 +22,8 @@ urlpatterns = [
     
     #Log
     url(r'^log_json/$', views_log.json_log, name='log-json'),
+
+    url(r'^empresa/', include('cliente.empresa.urls')),
 ]
 
 

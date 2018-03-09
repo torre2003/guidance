@@ -130,6 +130,7 @@ def view_lista_cliente(request):
 def json_lista_cliente(request):
     respuesta = {}
     columnas = []
+    columnas.append({'title':'ID', 'data':'id'});
     columnas.append({'title':'Rut', 'data':'rut'});
     columnas.append({'title':'Nombres', 'data':'nombres'});
     columnas.append({'title':'Apellidos', 'data':'apellidos'});
@@ -143,6 +144,7 @@ def json_lista_cliente(request):
     data_table = []
     for item in clientes:
         aux = {}
+        aux['id'] = item.id
         aux['rut'] = unicode(item.rut)+'-'+unicode(item.digito_verificador)
         aux['nombres'] = item.nombres
         aux['apellidos'] = item.apellidos

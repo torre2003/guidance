@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from datetime import datetime
-from cliente.models import Cliente, PotencialCliente, Log
-
+from cliente.models import Cliente, PotencialCliente
+from cliente.models import LogCliente as Log
+from cliente.empresa.models import Empresa
 
 
 class ManagerCliente():
@@ -139,53 +140,52 @@ class ManagerCliente():
         info = {}
         if rut:
             if cliente.rut != rut:
+                info['rut'] = cliente.rut,' -> ',rut
                 cliente.rut = rut
-                info['rut'] = rut
         if digito_verificador:
             if cliente.digito_verificador != digito_verificador:
+                info['digito_verificador'] = cliente.digito_verificador,' -> ',digito_verificador
                 cliente.digito_verificador = digito_verificador
-                cliente.digito_verificador = digito_verificador
-                info['digito_verificador'] = digito_verificador
         if nombres:
             if cliente.nombres != nombres:
+                info['nombres'] = cliente.nombres+' -> '+nombres
                 cliente.nombres = nombres
-                info['nombres'] = nombres
         if apellidos:
             if cliente.apellidos != apellidos:
+                info['apellidos'] = cliente.apellidos+' -> '+apellidos
                 cliente.apellidos = apellidos
-                info['apellidos'] = apellidos
         if direccion:
             if cliente.direccion != direccion:
+                info['direccion'] = cliente.direccion+' -> '+direccion
                 cliente.direccion = direccion
-                info['direccion'] = direccion
         if ciudad:
             if cliente.ciudad != ciudad:
+                info['ciudad'] = cliente.ciudad+' -> '+ciudad
                 cliente.ciudad = ciudad
-                info['ciudad'] = ciudad
         if pais:
             if cliente.pais != pais:
+                info['pais'] = cliente.pais+' -> '+pais
                 cliente.pais = pais
-                info['pais'] = pais
         if email:
             if cliente.email != email:
+                info['email'] = cliente.email+' -> '+email
                 cliente.email = email
-                info['email'] = email
         if sexo:
             if cliente.sexo != sexo:
+                info['sexo'] = cliente.sexo+' -> '+sexo
                 cliente.sexo = sexo
-                info['sexo'] = sexo
         if telefono:
             if cliente.telefono != telefono:
+                info['telefono'] = cliente.telefono+' -> '+telefono
                 cliente.telefono = telefono
-                info['telefono'] = telefono
         if fecha_nacimiento != '':
             if cliente.fecha_nacimiento != fecha_nacimiento:
+                info['fecha_nacimiento'] = unicode(cliente.fecha_nacimiento)+' -> '+unicode(fecha_nacimiento)
                 cliente.fecha_nacimiento = fecha_nacimiento
-                info['fecha_nacimiento'] = unicode(fecha_nacimiento)
         if descripcion:
             if cliente.descripcion != descripcion:
+                info['descripcion'] = cliente.descripcion+' -> '+descripcion
                 cliente.descripcion = descripcion
-                info['descripcion'] = descripcion
         cliente.save()
         if user_id:
             info['accion']=u'modificación'
@@ -285,24 +285,24 @@ class ManagerPotencialCliente():
         info = {}
         if nombre_completo:
             if potencial_cliente.nombre_completo != nombre_completo:
+                info['nombre_completo'] = potencial_cliente.nombre_completo+' -> '+nombre_completo
                 potencial_cliente.nombre_completo = nombre_completo
-                info['nombre_completo'] = nombre_completo
         if email:
             if potencial_cliente.email != email:
+                info['email'] = potencial_cliente.email+' -> '+email
                 potencial_cliente.email = email
-                info['email'] = email
         if telefono:
             if potencial_cliente.telefono != telefono:
+                info['telefono'] = potencial_cliente.telefono+' -> '+telefono
                 potencial_cliente.telefono = telefono
-                info['telefono'] = telefono
         if nacionalidad:
             if potencial_cliente.nacionalidad != nacionalidad:
+                info['nacionalidad'] = potencial_cliente.nacionalidad+' -> '+nacionalidad
                 potencial_cliente.nacionalidad = nacionalidad
-                info['nacionalidad'] = nacionalidad
         if descripcion:
             if potencial_cliente.descripcion != descripcion:
+                info['descripcion'] = potencial_cliente.descripcion+' -> '+descripcion
                 potencial_cliente.descripcion = descripcion
-                info['descripcion'] = descripcion
         potencial_cliente.save()
         if user_id:
             info['accion'] = 'modificación'
@@ -320,7 +320,7 @@ class ManagerLog():
     @staticmethod
     def crear_log(user_id, tipo_modelo, modelo_id, info):
         """
-            Función para crear un log de Cliente o PotencialCliente
+            Función para crear un log de Cliente, PotencialCliente, Empresa
             Params:
                 user_id: id del usuario asociado al registro
                 tipo_modelo(type): se espera un objeto type del modelo Cliente o PotencialCliente
@@ -331,16 +331,14 @@ class ManagerLog():
         """
         log = Log()
         log.user_id = user_id
-        print tipo_modelo
-        print type(Cliente())
-        print type(PotencialCliente())
         if tipo_modelo == type(Cliente()):
             log.modelo = Log.CLIENTE
         if tipo_modelo == type(PotencialCliente()):
             log.modelo = Log.POTENCIAL_CLIENTE
+        if tipo_modelo == type(Empresa()):
+            log.modelo = Log.EMPRESA
         log.modelo_id = modelo_id
         log.info = info
-        print log.__dict__
         log.save()
         return log
 
@@ -379,6 +377,8 @@ class ManagerLog():
                 tipo = Log.CLIENTE
             if kwargs['tipo_modelo'] == type(PotencialCliente()):
                 tipo = Log.POTENCIAL_CLIENTE
+            if kwargs['tipo_modelo'] == type(Empresa()):
+                tipo = Log.EMPRESA
             logs = logs.filter(modelo=tipo)
         if 'modelo_id' in kwargs:
             logs = logs.filter(modelo_id=kwargs['modelo_id'])

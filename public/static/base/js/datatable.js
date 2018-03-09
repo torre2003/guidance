@@ -36,6 +36,7 @@
         buttons: [],
         // contenedor donde se colocara el datatable en caso de usar ajax.
         setAllButtons: false,
+        // contenedor donde se colocara el datatable en caso de usar ajax.
         //contenedor: ".dataTable",
         // lenguaje para tratar los datos de la tabla. 
         "lenguaje": {
@@ -49,6 +50,8 @@
         "order": [[ 0, "asc" ]],
         // evento que se llama una vez que la tabla ha sido cargada y mostrada en la pagina.
         "initComplete": function(settings, json) {},
+        // indica si se debe agregar el grafico dentro de un box.
+        caja: true,
         // indica si la tabla debe agregarse al elemento contenedor sin sobreescribir su contenido.
         agregar: true, 
         // indica si el elemento (div) para el datatable sera obtenido desde el servidor. 
@@ -61,6 +64,14 @@
         searching:true,
         // indica si se calcula automaticamente el ancho de las columnas
         "autoWidht": true,
+        // Configuración general de columnas
+        columnDefs:null,
+        //indica el tamaño de la tabla para scroll Y
+        "scrollY":null,
+        //indica si se debe setear el scroll al colapsar
+        "scrollCollapse": null,
+        // indeica si debe aparecer el scroll horizontal
+        "scrollX": false,
     };
 
     $.SparseDataTable.prototype = {
@@ -96,6 +107,10 @@
                 "paging": this.options.paging,
                 searching:this.options.searching,
                 "autoWidth": this.options.autoWidht,
+                columnDefs: this.options.columnDefs,
+                "scrollY": this.options.scrollY,
+                "scrollCollapse":  this.options.scrollCollapse,
+                "scrollX": this.options.scrollX,
             });
         },
 

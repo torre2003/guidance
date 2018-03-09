@@ -4,6 +4,7 @@ import json
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Cliente(models.Model):
     nombres = models.CharField(max_length=202, verbose_name='Nombres')
     apellidos = models.CharField(max_length=200, verbose_name='Apellidos')
@@ -28,12 +29,14 @@ class PotencialCliente(models.Model):
     fecha = models.DateField(auto_now_add=True)
 
 
-class Log(models.Model):
+class LogCliente(models.Model):
     CLIENTE = 'cl'
     POTENCIAL_CLIENTE = 'pcl'
+    EMPRESA = 'emp'
     MODELOS = (
         (CLIENTE, 'Cliente'),
         (POTENCIAL_CLIENTE, 'PotencialCliente'),
+        (EMPRESA, 'Empresa'),
     )
     fecha = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, models.DO_NOTHING)
@@ -42,7 +45,7 @@ class Log(models.Model):
         choices=MODELOS,
     )
     modelo_id = models.PositiveIntegerField()
-    _info = models.TextField(max_length=500, default='{}')
+    _info = models.TextField(default='{}')
 
     def get_info(self):
         return json.loads(self._info)

@@ -41,7 +41,10 @@ INSTALLED_APPS = [
 
     'accounts',
     'cliente',
+    'cliente.empresa',
     'common',
+    'alojamiento',
+    'alojamiento.tarifa',
 ]
 
 MIDDLEWARE = [

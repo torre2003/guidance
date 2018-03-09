@@ -32,6 +32,51 @@
                         <span>Potenciales clientes</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{% url 'cliente:empresa:lista-empresa' %}" class=" waves-effect waves-block">
+                        <i class="material-icons">location_city</i>
+                        <span>Empresas</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="javascript:void(0);" class="menu-toggle waves-effect waves-block">
+                <i class="material-icons">work</i>
+                <span>Sección alojamiento</span>
+            </a>
+            <ul class="ml-menu" style="display: none;">
+                <li>
+                    <a href="{% url 'alojamiento:lista-canalventa' %}" class=" waves-effect waves-block">
+                        <i class="material-icons">nfc</i>
+                        <span>Canales de venta</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'alojamiento:lista-alojamiento' %}" class=" waves-effect waves-block">
+                        <i class="material-icons">store</i>
+                        <span>Alojamientos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'alojamiento:tarifa:lista-tarifa' %}" class=" waves-effect waves-block">
+                        <i class="material-icons">monetization_on</i>
+                        <i class="material-icons">store</i>
+                        <span>Tarifas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'alojamiento:tarifa:lista-temporada' %}" class=" waves-effect waves-block">
+                        <i class="material-icons">today</i>
+                        <span>Temporadas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="" class=" waves-effect waves-block">
+                        <i class="material-icons">event_note</i>
+                        <span>Reservas alojamiento</span>
+                    </a>
+                </li>
             </ul>
         </li>
         <!--
