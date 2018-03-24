@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 from cliente.models import Cliente, PotencialCliente
 from cliente.models import LogCliente as Log
+
 from cliente.empresa.models import Empresa
 
 
@@ -196,6 +197,10 @@ class ManagerCliente():
                 info=info
             )
         return cliente
+
+
+
+
 
 class ManagerPotencialCliente():
     """

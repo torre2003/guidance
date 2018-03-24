@@ -10,6 +10,7 @@ from . import templates_pdf
 from framework import ManagerCliente, ManagerLog
 from apps import ClienteConfig
 
+from cliente.empresa.framework import ManagerEmpresa
 
 @login_required
 def view_agregar(request):
@@ -32,6 +33,13 @@ def json_gestion_cliente(request):
                 fecha_nacimiento = unicode(dic_cliente['fecha_nacimiento'].day)+'-'+unicode(dic_cliente['fecha_nacimiento'].month)+'-'+unicode(dic_cliente['fecha_nacimiento'].year)
             dic_cliente['fecha_nacimiento'] = fecha_nacimiento
             dic_cliente['_state'] = ''
+            dic_cliente['empresas_asociadas'] = []
+            empresas_asociadas = ManagerEmpresa.obtener_asociacionclienteempresa(cliente_id=post_dic['cliente']).select_related('empresa')
+            for empresa_asociada in empresas_asociadas:
+                dic_cliente['empresas_asociadas'].append({
+                    'id':empresa_asociada.empresa.id,
+                    'nombre':empresa_asociada.empresa.nombre,
+                })
             if cliente is None:
                 return JsonResponse({
                     'state':'error',
@@ -128,16 +136,21 @@ def view_lista_cliente(request):
 
 @login_required
 def json_lista_cliente(request):
+    acciones = ['log_cliente', 'pdf_ficha', 'editar_cliente', 'seleccion_cliente', 'reserva_cliente']
+    print request.POST
+    if 'acciones[]' in request.POST:
+        acciones = request.POST.getlist('acciones[]')
+    print acciones
     respuesta = {}
     columnas = []
-    columnas.append({'title':'ID', 'data':'id'});
-    columnas.append({'title':'Rut', 'data':'rut'});
-    columnas.append({'title':'Nombres', 'data':'nombres'});
-    columnas.append({'title':'Apellidos', 'data':'apellidos'});
-    columnas.append({'title':'Fecha de nacimiento', 'data':'nacimiento'});
-    columnas.append({'title':'Dirección', 'data':'direccion'});
-    columnas.append({'title':'Email', 'data':'email'});
-    columnas.append({'title':'Teléfono', 'data':'telefono'});
+    columnas.append({'title':'ID', 'data':'id', "class": "id"});
+    columnas.append({'title':'Rut', 'data':'rut', "class": "rut"});
+    columnas.append({'title':'Nombres', 'data':'nombres', "class": "nombres"});
+    columnas.append({'title':'Apellidos', 'data':'apellidos', "class": "apellidos"});
+    columnas.append({'title':'Fecha de nacimiento', 'data':'nacimiento', "class": "nacimiento"});
+    columnas.append({'title':'Dirección', 'data':'direccion', "class": "direccion"});
+    columnas.append({'title':'Email', 'data':'email', "class": "email"});
+    columnas.append({'title':'Teléfono', 'data':'telefono', "class": "telefono"});
     columnas.append({'title':'Acciones', 'data':'acciones'});
 
     clientes = ManagerCliente.obtener_clientes()
@@ -152,9 +165,20 @@ def json_lista_cliente(request):
         aux['direccion'] = unicode(item.pais)+','+unicode(item.ciudad)+','+unicode(item.direccion)
         aux['email'] = item.email
         aux['telefono'] = item.telefono
-        aux['acciones'] = '<table  style ="width:100%; border:0px; padding:0px;"><tbody><tr><td style="width:50px; border:0px; padding:0px;"><button name="log" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">info</i></button></td><td style="width:50px; border:0px; padding:0px;"><button name="pdf_ficha" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">print</i></button></td><td style="width:50px; border:0px; padding:0px;"><button name="editar_cliente"   cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">edit</i></button></td></tr></tbody></table>'
+        # aux['acciones'] = '<table  style ="width:100%; border:0px; padding:0px;"><tbody><tr><td style="width:50px; border:0px; padding:0px;"><button name="log" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">info</i></button></td><td style="width:50px; border:0px; padding:0px;"><button name="pdf_ficha" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">print</i></button></td><td style="width:50px; border:0px; padding:0px;"><button name="editar_cliente"   cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">edit</i></button></td></tr></tbody></table>'
+        aux['acciones'] = '<table  style ="width:100%; border:0px; padding:0px;"><tbody><tr>'
+        if 'log_cliente' in acciones:
+            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="log" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">info</i></button></td>'
+        if 'pdf_ficha' in acciones:
+            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="pdf_ficha" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">print</i></button></td>'
+        if 'editar_cliente' in acciones:
+            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="editar_cliente"   cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">edit</i></button></td>'
+        if 'seleccion_cliente' in acciones:
+            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="seleccion_cliente"   cliente="'+unicode(item.id)+'"   cliente_nombre="'+unicode(item.nombres)+' '+unicode(item.apellidos)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">flash_on</i></button></td>'
+        if 'reserva_cliente' in acciones:
+            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="reserva_cliente"   cliente="'+unicode(item.id)+'"   cliente_nombre="'+unicode(item.nombres)+' '+unicode(item.apellidos)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">event_note</i></button></td>'
+        aux['acciones'] += '</tr></tbody></table>'
         data_table.append(aux)
-
     respuesta['data']=data_table
     respuesta['columnas'] = columnas
     return JsonResponse(respuesta)

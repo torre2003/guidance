@@ -50,6 +50,8 @@
         "order": [[ 0, "asc" ]],
         // evento que se llama una vez que la tabla ha sido cargada y mostrada en la pagina.
         "initComplete": function(settings, json) {},
+        // evento que se llama una vez terminada la carga de success
+        "successComplete": function(respuesta) {},
         // indica si se debe agregar el grafico dentro de un box.
         caja: true,
         // indica si la tabla debe agregarse al elemento contenedor sin sobreescribir su contenido.
@@ -146,6 +148,7 @@
                     
                     this.agregarElemento(this.elemento());
                     this.cargar();
+                    this.options.successComplete(respuesta);
                 },
                 // handle a non-successful response
                 error : function(xhr,errmsg,err) {

@@ -35,8 +35,11 @@ def view_test(request):
 @login_required
 def json_test_01(request):
     print '*'*10,'   Test-01    ','*'*10
-    # ma.crear_tipoalojamiento (nombre=u'cabañas tipo 3.1', descripcion=u'Cabañas del rey de las vacas', capacidad=1, habilitado=True, user_id=1)
-    ma.editar_tipoalojamiento (tipoalojamiento_id=3, nombre=u'cabañas tipo 3.3', descripcion=u'Cabañas del rey de las vacas..', capacidad=3, habilitado=True, user_id=1)
+    tarifas = mta.obtener_tarifas()
+    respuesta = list(tarifas)
+    for item in tarifas:
+        print item.__dict__
+    print respuesta
     print '*'*10,'   Test-01    ','*'*10
     return JsonResponse({})
 
@@ -44,7 +47,7 @@ def json_test_01(request):
 @login_required
 def json_test_02(request):
     print '*'*10,'   Test-02    ','*'*10
-    ma.crear_alojamiento(nombre='Cabaña Verde 7', codigo='CV7', tipoalojamiento_id=2, user_id=request.user.id)
+    # ma.crear_alojamiento(nombre='Cabaña Verde 7', codigo='CV7', tipoalojamiento_id=2, user_id=request.user.id)
     print '*'*10,'   Test-02    ','*'*10
     return JsonResponse({})
 
@@ -79,21 +82,100 @@ def json_test_06(request):
     print '*'*10,'   Test-06    ','*'*10
 
     mta.crear_tarifa(
-        nombre='Tarifa promocional verano 2017', 
+        nombre='Tarifa por dias', 
         descripcion='Tarifa para captar clientes', 
-        habilitado=False,
+        habilitado=True,
         restricciones = {
-            # 'temporadas':[1],
-            'dias': [1,4,5,6],
+            'temporadas':[1],
+            'canales_venta':[1,2],
             'tipos_alojamiento':[1,2],
-            # 'empresas':[1,2],
+            'empresas':[1,2],
         },
         valores={
-            1:10000.5,
-            2:10000,
-            3:20000,
-            4:20000,
-            5:30000,
+            1:{
+                1:20000,
+                2:20000,
+                3:50000,
+                4:50000,
+                5:60000,
+                6:60000,
+                7:61000,
+                8:61000,
+                9:61000,
+                10:61000,
+            },
+            2:{
+                1:12000,
+                2:12000,
+                3:15000,
+                4:15000,
+                5:16000,
+                6:16000,
+                7:61000,
+                8:61000,
+                9:61000,
+                10:61000,
+            },
+            3:{
+                1:12000,
+                2:12000,
+                3:15000,
+                4:15000,
+                5:16000,
+                6:16000,
+                7:61000,
+                8:61000,
+                9:61000,
+                10:61000,
+            },
+            4:{
+                1:12000,
+                2:12000,
+                3:15000,
+                4:15000,
+                5:16000,
+                6:16000,
+                7:61000,
+                8:61000,
+                9:61000,
+                10:61000,
+            },
+            5:{
+                1:12000,
+                2:12000,
+                3:15000,
+                4:15000,
+                5:16000,
+                6:16000,
+                7:61000,
+                8:61000,
+                9:61000,
+                10:61000,
+            },
+            6:{
+                1:20000,
+                2:20000,
+                3:50000,
+                4:50000,
+                5:60000,
+                6:60000,
+                7:61000,
+                8:61000,
+                9:61000,
+                10:61000,
+            },
+            7:{
+                1:20000,
+                2:20000,
+                3:50000,
+                4:50000,
+                5:60000,
+                6:60000,
+                7:61000,
+                8:61000,
+                9:61000,
+                10:61000,
+            },
         },
         user_id=request.user.id
     )
@@ -206,3 +288,9 @@ def json_test_09(request):
         )
     print '*'*10,'   Test-09    ','*'*10
     return JsonResponse({})
+
+
+@login_required
+def view_test_11(request):
+    context = {}
+    return render(request, CommonConfig.name+'/ejemplo_timeline.html', context)

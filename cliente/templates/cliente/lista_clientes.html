@@ -207,6 +207,7 @@
         id : 'tabla_cliente_id',
         url : "{% url 'cliente:lista-cliente-json' %}", 
         ajax: true,
+        ajaxData : {'acciones':['log_cliente', 'pdf_ficha', 'editar_cliente', 'reserva_cliente']},
         setAllButtons:true,
       };
     var sparseTabla_cliente = $('#container_tabla_cliente').sparseDataTable(params_cliente);
@@ -490,7 +491,7 @@
     
 
     //Evento ver log
-    $(document).on('click',"button[name=log]" ,function() {
+    $(document).on('click',"button[name=log_cliente]" ,function() {
             var cliente = $(this).attr('cliente')
             ajaxDataLog('cliente',cliente);
         }

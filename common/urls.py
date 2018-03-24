@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^test_07/$', views.json_test_07, name='test-07'),
     url(r'^test_08/$', views.json_test_08, name='test-08'),
     url(r'^test_09/$', views.json_test_09, name='test-09'),
+
+    #Vista normal
+    url(r'^test_11/$', views.view_test_11, name='test-11'),
 ]
-
-
