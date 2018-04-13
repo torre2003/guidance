@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load common_tags %}
+
+{% block titulo_head %}Reserva de alojamiento{% endblock%}
+{% block titulo%}Reserva de alojamiento{% endblock%}
+
+{% block css %}
+<link href="{% static '/plugins/vis/vis.min.css' %}" rel="stylesheet" type="text/css" />
+  <style>
+    body, html {
+      font-family: arial, sans-serif;
+      font-size: 11pt;
+    }
+
+    #visualization {
+      box-sizing: border-box;
+      width: 100%;
+      
+    }
+
+    .vis-item.openwheel  { background-color: #B0E2FF; }
+    .vis-item.rally      { background-color: #EAEAEA; }
+    .vis-item.motorcycle { background-color: #FA8072; }
+    .vis-item.touringcar { background-color: #B4EEB4; }
+    .vis-item.endurance  { background-color: #FFFFCC; }
+
+    .vis-item .vis-item-overflow {
+      overflow: visible;
+    }
+
+    .vis-item.orange {
+      background-color: gold;
+      border-color: orange;
+    }
+    .vis-item.vis-selected.orange {
+      /* custom colors for selected orange items */
+      background-color: orange;
+      border-color: orangered;
+    }
+
+    /* our custom classes overrule the styles for selected events,
+       so lets define a new style for the selected events */
+    .vis-item.vis-selected {
+      background-color: white;
+      border-color: black;
+      color: black;
+      box-shadow: 0 0 10px gray;
+    }
+
+
+        .progress-wrapper {
+      background: white;
+      width: 100%;
+      height: 18px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      width: 60%;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      background: #63ed63;
+    }
+
+    .progress-label {
+      position: absolute;
+      z-index: 1;
+    }
+
+
+    /* alternating column backgrounds */
+    .vis-time-axis .vis-grid.vis-odd {
+      background: #f5f5f5;
+    }
+
+    /* gray background in weekends, white text color */
+    .vis-time-axis .vis-grid.vis-saturday,
+    .vis-time-axis .vis-grid.vis-sunday {
+      background: gray;
+    }
+    .vis-time-axis .vis-text.vis-saturday,
+    .vis-time-axis .vis-text.vis-sunday {
+      color: white;
+    }
+  </style>
+{% endblock %}
+
+{% block contenido %}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <!--
+                <div style="position:relative">
+                    <div style="position:absolute; top:-15px; left:95%;">
+                        <button id="boton_agregar" type="button" class="btn bg-indigo btn-circle-lg waves-effect waves-circle waves-float">
+                            <i class="material-icons">add</i>
+                        </button>
+                    </div>
+                </div>
+                -->
+                <h2>
+                    Reserva Alojamiento
+                </h2>
+            </div>
+            <div class="body">
+                <div id="visualization" ></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+{% django_ajax %}
+<script src="{% static '/plugins/momentjs/moment-with-locales.js' %}"></script>
+<script src="{% static '/plugins/vis/vis.min.js' %}"></script>
+
+<script>
+    //Para los templates en los box ver ejemplo examples/timeline/styling/itemTemplates.html
+
+  var now = moment().minutes(0).seconds(0).milliseconds(0);
+  var itemCount = 60;
+
+  // create a data set with groups
+  var groups = new vis.DataSet();
+
+
+
+  groups.add([
+    {
+      id: 11,
+      content: "CN1",
+    },
+    {
+      id: 12,
+      content: "CN2",
+    },
+    {
+      id: 13,
+      content: "CN3",
+    },
+    {
+      id: 14,
+      content: "CN4",
+    }
+  ]);
+
+  groups.add([
+    {
+      id: 21,
+      content: "CV1",
+    },
+    {
+      id: 22,
+      content: "CV2",
+    },
+    {
+      id: 23,
+      content: "CV3",
+    },
+    {
+      id: 24,
+      content: "CV4",
+    },
+    {
+      id: 25,
+      content: "CV5",
+    }
+  ]);
+
+  groups.add([
+    {
+      id: 1,
+      content: "Cabañas Tipo 1 - Naranjas",
+      nestedGroups: [11,12,13,14],
+      showNested: true
+    },
+    {
+      id: 2,
+      content: "Cabañas Tipo 2 - Verdes",
+      nestedGroups: [21,22,23,24,25],
+      showNested: true,
+      visible: true,
+    },
+  ]);
+
+  // create a dataset with items
+  var items = new vis.DataSet();
+  var groupIds = groups.getIds();
+    var types = [ 'box', 'point', 'range', 'background']
+  for (var i = 0; i < itemCount; i++) {
+    var start = now.clone().add(Math.random() * 2000, 'hours');
+    var end = start.clone().add(48, 'hours');
+    var randomGroupId = groupIds[Math.floor(Math.random() * groupIds.length)];
+    // var type = types[Math.floor(4 * Math.random())]
+    var type = 'range'
+    var className = "motorcycle"
+    if ( i %2 == 0)
+        className = "openwheel"
+    if ( i %3 == 0)
+        className = "orange"
+    console.log(randomGroupId)
+    console.log(groups.get(id=randomGroupId))
+    items.add({
+      id: i+1000,
+      group: randomGroupId,
+      content: 'item ' + i + ' <span style="color:#0011dc;">(' + groups.get(id=randomGroupId).content + ')</span>',
+      start: start,
+      end: end,
+      type: type,
+      className:className,
+      title: '<table border="1"><tr><td>Cell 1</td><td>Cell 2</td></tr></table></br><p>asdasda ksd asda sdhas dhkad asdha sdiuhaidsu  haisdhais d</p>',//Popup que se muestra
+      visibleFrameTemplate: '<div class="progress-wrapper"><div class="progress" style="width:80%"></div><label class="progress-label">80 per cent<label></div>',//Barra de progreso en conjunto con la funcion especificada en options
+    });
+  }
+
+  // create visualization
+  var container = document.getElementById('visualization');
+  var options = {
+    orientation: {axis: 'both'},
+    locale: 'es',
+    stack: true,
+    groupOrder: 'content',  // groupOrder can be a property name or a sorting function
+    // Con esta función se agrega a barra de progreso
+    visibleFrameTemplate: function(item) {
+      if (item.visibleFrameTemplate) {
+        return item.visibleFrameTemplate;
+      }
+      console.log(item)
+      var percentage = 100 + '%';
+      return '<div class="progress-wrapper"><div class="progress" style="width:' + percentage + '"></div><label class="progress-label">' + percentage + '<label></div>';
+    },
+
+  };
+
+  var timeline = new vis.Timeline(container, items, groups, options);
+
+    timeline.on('click', function (properties) {
+        if (properties.what == 'item')
+            alert ('click'+properties.item);
+        // Se debe preguntar si es un item
+        console.log(properties)
+      // logEvent('click', properties);
+    });
+
+  function setDate() {
+    timeline.setWindow('2014-01-01', '2014-04-01');
+  };
+
+  function focus () {
+    timeline.focus([1003, 1005], {animation: {duration: 3000, easingFunction: 'linear'}}); // ms
+  };
+</script>
+{% endblock %}

@@ -1,0 +1,454 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load common_tags %}
+{% block titulo_head %}Alojamientos{% endblock%}
+{% block titulo%}{% endblock%}
+{% block css %}
+    {% css_dataTable %}
+{% endblock %}
+{% block contenido %}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        
+        <div class="card">
+            <div class="header">
+                <!--
+                <div style="position:relative">
+                    <div style="position:absolute; top:-15px; left:95%;">
+                        <button id="boton_agregar" type="button" class="btn bg-indigo btn-circle-lg waves-effect waves-circle waves-float">
+                            <i class="material-icons">add</i>
+                        </button>
+                    </div>
+                </div>
+                -->
+                <h2>
+                    Tipos de alojamiento
+                </h2>
+            </div>
+            <div id="contenedor_lista"class="body">
+                {% div_dataTable 'tabla_tipoalojamiento_id' %} 
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        
+        <div class="card">
+            <div class="header">
+                <!--
+                <div style="position:relative">
+                    <div style="position:absolute; top:-15px; left:95%;">
+                        <button id="boton_agregar" type="button" class="btn bg-indigo btn-circle-lg waves-effect waves-circle waves-float">
+                            <i class="material-icons">add</i>
+                        </button>
+                    </div>
+                </div>
+                -->
+                <h2>
+                    Alojamiento
+                </h2>
+            </div>
+            <div id="contenedor_lista"class="body">
+                {% div_dataTable 'tabla_alojamiento_id' %} 
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal potencial cliente -->
+<!--
+<div class="modal fade" id="modal_potencial_cliente" cliente="0" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <button type="button" class="btn bg-indigo btn-circle-lg waves-effect waves-circle waves-float">
+                                <i id="ico_titulo_modal" class="material-icons">add</i>
+                            </button>
+                            Información Potencial cliente
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <i class="material-icons">close</i>
+                            </button>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <form id="form_potencial_cliente" method="POST" novalidate="novalidate" onsubmit="return false;" >
+                            <input name="id" type="number" hidden>
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input class="form-control" name="nombre_completo" required="" aria-required="true" type="text">
+                                    <label class="form-label">Nombre</label>
+                                </div>
+                            </div>
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input class="form-control" name="email" required="" aria-required="true" type="email">
+                                    <label class="form-label">Email</label>
+                                </div>
+                            </div>
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input class="form-control" name="telefono" required="" aria-required="true" type="text">
+                                    <label class="form-label">Télefono</label>
+                                </div>
+                            </div>
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input class="form-control" name="nacionalidad" required="" aria-required="true" type="text">
+                                    <label class="form-label">Nacionalidad</label>
+                                </div>
+                            </div>
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <textarea name="descripcion" cols="30" rows="5" class="form-control no-resize" aria-required="true"></textarea>
+                                    <label class="form-label">Descripción</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="botton_modal_aceptar" tipo="" class="btn btn-primary waves-effect" >Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ./ Modal edición cliente -->
+
+<!-- Modal Log -->
+<div class="modal fade" id="modal_log" cliente="0" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="width:80%">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2><i class="material-icons">info</i>Registro de cambios
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <i class="material-icons">close</i>
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="container_tabla_log"class="body">
+                        {% div_dataTable 'tabla_log_id' %}
+<!--
+                        <div class="table-responsive">
+                          <table id="tabla_log" class="table responsive table-hover table-striped dataTable js-exportable"></table>
+                        </div>
+-->
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <!--
+      <div class="modal-footer">
+        <button id="enviar_editar_cliente" class="btn btn-primary waves-effect" >Ingresar</button>
+      </div>
+        -->
+    </div>
+  </div>
+</div>
+<!-- ./ Modal log -->
+{% endblock %}
+
+
+{% block scripts %}
+{% js_dataTable True %}
+
+<!-- Jquery Validation Plugin Css -->
+<script src="{% static '/plugins/jquery-validation/jquery.validate.js' %}"></script>
+<script src="{% static '/base/js/DjangoAjax.js' %}"></script>
+<script>
+/*
+$.validator.setDefaults({
+  debug: true,
+  success: "valid"
+});
+
+
+$(function () {
+    form_validation = $('#form_potencial_cliente')
+    form_validation.validate({
+        
+        submitHandler: function(form) {
+            $(form).ajaxSubmit();
+          },
+        success: "valid",
+        rules: {
+            'nombre_completo': {
+                required: true,
+                minlength: 3,
+                maxlength: 300,
+            },
+            'email': {
+                required: true,
+            },
+            'nacionalidad': {
+                required: true,
+                maxlength: 100,
+            },
+            'telefono': {
+                required:false,
+                telefonos: true,
+            },
+        },
+        highlight: function (input) {
+            $(input).parents('.form-line').addClass('error');
+        },
+        unhighlight: function (input) {
+            $(input).parents('.form-line').removeClass('error');
+        },
+        errorPlacement: function (error, element) {
+            $(element).parents('.form-group').append(error);
+        }
+    });
+
+    //Telefonoes
+    $.validator.addMethod('telefonos', function (value, element) {
+        telefonos = value.split(',');
+        flag = true
+        for(var i=0; i < telefonos.length; i++){
+            if (telefonos[i] !=  '')
+                for(var j=0; j < telefonos[i].length; j++){
+                    if (null == telefonos[i][j].match(/^\d?$/))
+                        flag = false
+                }
+        }
+        return flag;
+    },
+
+        'Se debe ingresar solo números separados por coma.'
+    );
+});
+*/
+</script>
+
+{% django_ajax %}
+<script>
+
+    var params_tipoalojamiento = {
+        id:'tabla_tipoalojamiento_id',
+        url : "{% url 'alojamiento:lista-tipoalojamiento-json' %}",
+        ajaxData : {'param_1':1},
+        setAllButtons:true,
+        ajax:true,
+
+      };
+    var sparseTabla = $('#contenedor_lista').sparseDataTable(params_tipoalojamiento);
+
+
+    var params_alojamiento = {
+        id:'tabla_alojamiento_id',
+        url : "{% url 'alojamiento:lista-alojamiento-json' %}",
+        ajaxData : {'param_1':1},
+        setAllButtons:true,
+        ajax:true,
+
+      };
+    var sparseTabla = $('#contenedor_lista').sparseDataTable(params_alojamiento);
+
+
+
+
+
+
+/*
+    function ajaxGestionPotencialCliente (opcion, potencial_cliente=null){
+        datos_ajax = {opcion:opcion}
+        switch(opcion) {
+            case 'CONSULTA':
+                datos_ajax['potencial_cliente'] = potencial_cliente
+                break;
+            case 'EDICION':
+            case 'NUEVO':
+                var form_data = $('#form_potencial_cliente').serializeArray().reduce(function(obj, item) {
+                    obj[item.name] = item.value;
+                    return obj;
+                }, {});
+                datos_ajax['data'] = form_data
+                break;
+        }
+        var data = {
+            'datos': JSON.stringify(datos_ajax)
+        };
+        blockpage(true)
+        $.ajax({
+            method: "POST",
+            url: "{% url 'cliente:gestion-potencial-cliente-json' %}",
+            data: data
+        }).done(function( response ) {
+            console.log(response);
+            if (response.state == 'success'){
+                switch(opcion) {
+                    case 'CONSULTA':
+                        $('input[name=id]').val(response.potencial_cliente.id);
+                        $('input[name=nombre_completo]').val(response.potencial_cliente.nombre_completo);
+                        $('input[name=email]').val(response.potencial_cliente.email);
+                        $('input[name=nacionalidad]').val(response.potencial_cliente.nacionalidad);
+                        $('textarea[name=descripcion]').val(response.potencial_cliente.descripcion);
+                        $('input[name=telefono]').val(response.potencial_cliente.telefono);
+                        form_validation.valid();
+                        break;
+                    case 'EDICION':
+                    case 'NUEVO':
+
+                        sparseTabla.recargar(params);
+                        $('#modal_potencial_cliente').modal('toggle');
+                        mensaje = "Editado correctamente.";
+                        if (opcion == 'NUEVO')
+                            mensaje = "Ingresado correctamente.";
+                        swal({
+                              title: "Potencial Cliente",
+                              text: mensaje,
+                              icon: "success",
+                        });
+                        break;
+                }
+                blockpage(false)
+            }
+            else
+                swal({
+                  title: "Mensaje",
+                  text: response.messages[0].text,
+                  icon: response.messages[0].type,
+                });
+            blockpage(false)
+        }).fail(function(response) {
+            console.log(response);
+            swal({
+                  title: "Servidor",
+                  text: "Error en la petición",
+                  icon: "error",
+            });
+            blockpage(false)
+        });
+    }
+
+    var sparseTabla_log = null;
+    function ajaxDataLog(modelo, modelo_id){
+        $.ajax({
+            async:true,
+            method: "POST",
+            url: "{% url 'cliente:log-json' %}",
+            data: {
+                modelo:modelo,
+                modelo_id:modelo_id
+            }
+        }).done(function( response ) {
+            console.log(response);
+            if (response.state == 'success'){
+                if (response.data.length == 0 ){
+                    swal({
+                        title: "Información",
+                        text: "No hay registros asociados.",
+                        icon: "info"
+                    });
+                    return
+                }
+                var params_log = {
+                    id:'tabla_log_id',
+                    // clases:' content ',
+                    data:response.data,
+                    columnas:response.columnas,
+                    "paging": false,
+                    searching:false,
+                    "autoWidht": false,
+                }
+                if (sparseTabla_log == null)
+                    sparseTabla_log = $("#container_tabla_log").sparseDataTable(params_log);
+                else
+                    sparseTabla_log.recargar(params_log);
+                $('#modal_log').modal('toggle');
+            }
+            else 
+                swal({
+                    title: "Información",
+                    text: response.messages[0].text,
+                    icon: response.messages[0].state
+                });
+
+        }).fail(function(response) {
+            console.log(response);
+            swal({
+                  title: "Servidor",
+                  text: "Error en la petición",
+                  icon: "error"
+            });
+        });
+    }
+
+
+    function mostrarModalAgregarPotencialCliente(){
+        $('#ico_titulo_modal').text('add');
+        $('input').val('')
+        $('textarea').val('')
+        $('#modal_potencial_cliente').modal('toggle');
+        $('#botton_modal_aceptar').attr('tipo', 'nuevo');
+    }
+
+    function mostrarModalEditarPotencialCliente(potencial_cliente){
+        $('#ico_titulo_modal').text('edit');
+        $('input').val('')
+        $('textarea').val('')
+        $('#modal_potencial_cliente').modal('toggle');
+        $('#botton_modal_aceptar').attr('tipo', 'editar');
+        ajaxGestionPotencialCliente ('CONSULTA', potencial_cliente=potencial_cliente)
+        //ajaxConsultarPotencialCliente(potencial_cliente);
+    }
+
+    //Evento agregar cliente
+    $(document).on('click',"button[id=boton_agregar]" ,function() {
+            mostrarModalAgregarPotencialCliente();
+        }
+    );
+
+    //botón modal aceptar
+    $( "#botton_modal_aceptar" ).on( "click", function(e){
+        form_validation.valid()
+        setTimeout(function(){ 
+            if (form_validation.valid() && $('label[class=error]').length == 0)
+                if ($('#botton_modal_aceptar').attr('tipo') == 'nuevo'){
+                    ajaxGestionPotencialCliente ('NUEVO')
+                    //ajaxAgregarPontecialCliente();
+                }else
+                if ($('#botton_modal_aceptar').attr('tipo') == 'editar'){
+                    ajaxGestionPotencialCliente ('EDICION')
+                    //ajaxEditarPotencialCliente();
+                }
+        }, 10); 
+        
+    });
+
+
+    //Evento editar cliente
+    $(document).on('click',"button[name=editar]" ,function() {
+            potencial_cliente = $(this).attr('potencial_cliente')
+            mostrarModalEditarPotencialCliente(potencial_cliente)
+        }
+    );
+
+        //Evento ver log
+    $(document).on('click',"button[name=log]" ,function() {
+            var potencial_cliente = $(this).attr('potencial_cliente')
+            ajaxDataLog('potencial_cliente',potencial_cliente);
+        }
+    );
+
+/**/
+    </script>
+
+
+{% endblock %}

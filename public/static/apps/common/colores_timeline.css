@@ -1,0 +1,103 @@
+@charset "UTF-8";
+body, html {
+      font-family: arial, sans-serif;
+      font-size: 11pt;
+    }
+
+#visualization {
+  box-sizing: border-box;
+  width: 100%;
+  
+}
+
+.temporada {
+  background-color: rgba(233, 239, 24,1) !important;
+}
+
+.vis-item .vis-item-overflow {
+  overflow: visible;
+}
+
+/* our custom classes overrule the styles for selected events,
+   so lets define a new style for the selected events */
+.vis-item.vis-selected {
+  background-color: white;
+  border-color: black;
+  color: black;
+  box-shadow: 5px 10px 8px gray;
+}
+
+.custom-selected-item {
+  border-color: rgba(255,255,255, 1);
+  /*border-width: 5px;*/
+  background-color: rgba(255,255,255, 1);
+}
+/* alternating column backgrounds */
+.vis-time-axis .vis-grid.vis-odd {
+  /*background: #f5f5f5;*/
+}
+/* gray background in weekends, white text color */
+.vis-time-axis .vis-grid.vis-saturday{
+  background: rgba(31, 145, 243,0.03);
+}
+.vis-time-axis .vis-grid.vis-sunday {
+  background: rgba(31, 145, 243,0.06);
+}
+.vis-time-axis .vis-text.vis-saturday,
+.vis-time-axis .vis-text.vis-sunday {
+  color: black;
+}
+
+.vis-item.estado_confirmando_pago {
+  border-color: rgba(255, 140, 0, 1);
+  border-width: 3px;
+  background-color: rgba(255, 140, 0, 0.6);
+}
+
+.vis-item.vis-selected.estado_confirmando_pago {
+  /* custom colors for selected orange items */
+  border-color: rgba(255, 140, 0, 0.9);
+  border-width: 5px;
+  background-color: white;
+}
+
+.vis-item.estado_pagada {
+  border-color: rgba(16, 221, 3, 1);
+  border-width: 3px;
+  background-color: rgba(16, 221, 3, 0.6);
+}
+
+.vis-item.vis-selected.estado_pagada {
+  /* custom colors for selected orange items */
+  border-color: rgba(16, 221, 3, 0.9);
+  border-width: 5px;
+  background-color: white;
+}
+
+.vis-item.estado_confirmada {
+  border-color: rgba(0, 150, 255, 1);
+  border-width: 3px;
+  background-color: rgba(0, 150, 255, 0.6);
+}
+
+.vis-item.vis-selected.estado_confirmada {
+  /* custom colors for selected orange items */
+  border-color: rgba(0, 150, 255, 0.9);
+  border-width: 5px;
+  background-color: white;
+}
+
+.vis-item.estado_cancelada {
+  border-color: rgba(255, 45, 45, 1);
+  border-width: 3px;
+  background-color: rgba(255, 45, 45, 0.6);
+}
+
+.vis-item.vis-selected.estado_cancelada {
+  /* custom colors for selected orange items */
+  border-color: rgba(255, 45, 45, 0.9);
+  border-width: 5px;
+  background-color: white;
+}
+
+

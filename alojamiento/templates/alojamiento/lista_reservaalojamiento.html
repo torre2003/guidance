@@ -1,0 +1,386 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load common_tags %}
+
+{% block titulo_head %}Reserva de alojamiento{% endblock%}
+{% block titulo%}Reserva de alojamiento{% endblock%}
+
+{% block css %}
+{% css_dataTable %}
+<link rel="stylesheet" href="{% static '/plugins/iCheck/all.css' %}">
+<link href="{% static '/plugins/bootstrap-select/css/bootstrap-select.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static '/plugins/vis/vis.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static '/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css' %}" rel="stylesheet">
+<link href="{% static '/plugins/multi-select/css/multi-select.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static '/apps/common/colores_timeline.css' %}" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+
+{% block contenido %}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div style="position:relative">
+                    <div style="position:absolute; top:-15px; left:95%;">
+                        <button id="abrir_ingresar_reserva" type="button" class="btn bg-indigo btn-circle-lg waves-effect waves-circle waves-float">
+                            <i class="material-icons">add</i>
+                        </button>
+                    </div>
+                </div>
+                <h2>
+                    Reserva Alojamiento
+                </h2>
+            </div>
+            <div class="body">
+                <div id="visualization" ></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row clearfix" name="reservando_alojamiento" id="seleccion_cliente" style="display:none;">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <!-- <div style="position:relative">
+                    <div style="position:absolute; top:-15px; left:95%;">
+                        <a href="{% url 'cliente:agregar' %}">
+                            <button id="boton_agregar" type="button" class="btn bg-indigo btn-circle-lg waves-effect waves-circle waves-float">
+                                <i class="material-icons">add</i>
+                            </button>
+                        </a>
+                    </div>
+                </div> -->
+                <h2>
+                    Ingresado reserva - Seleccionar cliente
+                </h2>
+            </div>
+            <div id="container_tabla_cliente"class="body">
+                {% div_dataTable 'tabla_cliente_id' %} 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-red waves-effect" name="cancelar">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row clearfix" name="reservando_alojamiento" id="ingreso_alojamiento" style="display:none;">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Ingresando reserva - <span id="nombre_cliente"></span>
+                </h2>
+                <h5>
+                    
+                </h5>
+            </div>
+            <div class="body clearfix">
+                <div class="row">
+                  <div id="select_alojamientos" class="col-md-3">
+                    Alojamiento: 
+                  </div>
+                  <div class="col-md-5">
+                    Fecha: <div><input class="datepicker" name="fecha_inicial" type="text"> - <input class="datepicker" name="fecha_final" type="text"></div>
+                  </div>
+                  <div id="select_canal_venta" class="col-md-4">
+                    Canal de Venta:
+                  </div>
+                  <div class="col-md-2">
+                    Personas:
+                    <select id="select_personas" class="selectpicker show-tick" tabindex="-98" data-width="100%">
+                        <option value="-1" selected>Seleccionar</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">&nbsp;&nbsp;<br/>
+                    <label><input name="dias" type="checkbox" class="minimal" value="" checked="false"> Alojamiento cautivo</label>
+                  </div>
+                  <div class="col-md-3">
+                    Tarifa:
+                      <input id="tarifa_seleccionada" class="form-control" type="text" disabled>
+                  </div>
+                  <div class="col-md-2">
+                    &nbsp;&nbsp;<br />
+                    <button type="button" class="btn bg-indigo waves-effect" name="abrir_seleccion_tarifa"><i class="material-icons">attach_money</i>Seleccionar tarifa</button>
+                  </div>
+                  <div id="div_select_comentarios" class="col-md-12">
+                  </div>
+                  <div class="col-md-12">
+                    <button type="button" class="btn bg-light-green waves-effect" name="agregar_alojamiento"><i class="material-icons">add</i>Agregar alojamiento</button>
+                  </div>
+                </div>
+                <hr />
+                Alojamientos seleccionados:
+                <div class="col-md-12">
+                   <table class="table table-condensed">
+                      <thead>
+                          <tr>
+                              <th>Alojamiento</th>
+                              <th>Personas</th>
+                              <th>Fecha inicio</th>
+                              <th>Fecha final</th>
+                              <th>Canal de venta</th>
+                              <th>Cautivo</th>
+                              <th>Comentarios</th>
+                              <th>Tarifa</th>
+                              <th>Total</th>
+                              <th>Acciones</th>
+                          </tr>
+                      </thead>
+                      <tbody id="body_alojamientos_seleccionadas">
+                      </tbody>
+                  </table>
+                </div>
+                <hr />
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-2">
+                      Cuenta cargo:
+                    </div>
+                    <div class="col-md-6">
+                      <input id="cuenta_seleccionada" class="form-control" type="text" cuenta_id="-1" cuenta_tipo="-1" disabled>
+                    </div>
+                    <div class="col-md-4">
+                      <button type="button" class="btn bg-indigo waves-effect" name="abrir_seleccion_cuenta"><i class="material-icons">attach_money</i>Seleccionar Cuenta</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn bg-red waves-effect" name="cancelar">Cancelar</button>
+                <button type="button" class="btn bg-indigo waves-effect" name="ingresar_reserva">Ingresar reserva</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tarifa -->
+<div class="modal fade" id="modal_tarifas" cliente="0" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="width:80%">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2><i class="material-icons">attach_money</i>Tarifas
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <i class="material-icons">close</i>
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="container_tabla_tarifa"class="body">
+                        {% div_dataTable 'tabla_tarifa_id' %}
+<!--
+                        <div class="table-responsive">
+                          <table id="tabla_log" class="table responsive table-hover table-striped dataTable js-exportable"></table>
+                        </div>
+-->
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <!--
+      <div class="modal-footer">
+        <button id="enviar_editar_cliente" class="btn btn-primary waves-effect" >Ingresar</button>
+      </div>
+        -->
+    </div>
+  </div>
+</div>
+<!-- ./ Modal Tarifa -->
+<!--  Modal Resumen Alojamiento -->
+<div class="modal fade" id="modal_resumen_alojamiento" tabindex="-1" role="dialog" style="display: hidden;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-col-indigo">
+            <div class="modal-header">
+                <h4 class="modal-title" id="defaultModalLabel">Resumen de alojamiento:</h4>
+            </div>
+            <div class="modal-body">
+                <p><label>Alojamiento: </label><span id="alojamiento"></span></p>
+                <p><label>Tipo: </label><span id="tipo"></span></p>
+                <p><label>Personas: </label><span id="personas"></span></p>
+                <p><label>Fechas: </label><span id="fecha"></span></p>
+                <p><label>Canal de venta: </label><span id="canal_venta"></span></p>
+                <p><label>Cautivo: </label><span id="cautiva"></span></p>
+                <p><label>Tarifa: </label><span id="tarifa"></span></p>
+                <hr />
+                <p><label>Comentarios: </label>
+                  <br />
+                  <span id="comentarios"></span>
+                </p>
+                <hr />
+                <p>
+                  <label>Valores:</label><br />
+                  <span id="detalle"></span><br />
+                  <span>------------------------------------------</span><br>
+                  <label>Total:$</label><span id="total" style="font-size: 20px;">45.215</span>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-red waves-effect" name="modal_resumen_alojamiento_cancelar">Cancelar</button>
+                <button type="button" class="btn bg-green waves-effect" name="modal_resumen_alojamiento_agregar">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /. Modal Resumen Alojamiento -->
+
+
+<!--  Modal Seleccion Cuenta Cargo -->
+<div class="modal fade" id="modal_seleccion_cuenta_cargo" tabindex="-1" role="dialog" style="display: hidden;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-col-indigo">
+            <div class="modal-header">
+                <h4 class="modal-title" id="defaultModalLabel">Seleccione la cuenta a realizar el cargo de la reserva:</h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group" name="grupo_seleccion_cuentas">
+                
+                <input name="gender" id="male" class="with-gap radio-col-yellow" type="radio" value="HOMBRE">
+                <label for="male" class="m-l-20">Cuenta cliente: Bla Bla Bla</label>
+                <br />
+                <input name="gender" id="other_male" class="with-gap radio-col-amber" type="radio" value="OTHER">
+                <label for="other_male" class="m-l-20">Cuenta empresa: Bla Bla Bla</label>
+                <br />
+                <input name="gender" id="female" class="with-gap radio-col-amber" type="radio" value="MUJER">
+                <label for="female" class="m-l-20">Mujer</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-red waves-effect" name="seleccion_cuenta_cargo_cancelar">Cancelar</button>
+                <button type="button" class="btn bg-green waves-effect" name="seleccion_cuenta_cargo_agregar">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /. Modal Seleccion Cuenta Cargo -->
+
+{% endblock %}
+
+
+{% block scripts %}
+{% django_ajax %}
+{% js_dataTable True %}
+<script src="{% static '/plugins/multi-select/js/jquery.multi-select.js' %}"></script>
+<script src="{% static '/plugins/momentjs/moment-with-locales.js' %}"></script>
+<script src="{% static '/plugins/vis/vis.min.js' %}"></script>
+<script src="{% static '/plugins/iCheck/icheck.min.js' %}"></script>
+
+<script src="{% static '/plugins/bootstrap-select/js/bootstrap-select.min.js' %}"></script>
+<script src="{% static '/plugins/bootstrap-select/js/i18n/defaults-es_CL.min.js' %}"></script>
+<script src="{% static '/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js' %}"></script>
+<script>//Bloque para dejar las variables con las urls de Django
+
+var url_gestion_cliente = "{% url 'cliente:gestion-cliente-json' %}";
+var url_data_ocupacion_alojamiento =  "{% url 'alojamiento:data-ocupacionalojamiento-json' %}";
+var url_canalesventa =  "{% url 'alojamiento:obtener-canalesventa-json' %}";
+var url_tarifas =  "{% url 'alojamiento:tarifa:obtener-tarifas-json' %}";
+var url_comprobarocupacion = "{% url 'alojamiento:comprobarocupacion-json' %}";
+var url_crear_reserva = "{% url 'alojamiento:crear-reserva-json' %}";
+var url_comentarios = "{% url 'alojamiento:lista-comentario-json' %}";
+
+
+</script>
+<script src="{% static '/apps/alojamiento/lista_reservaalojamiento_ajax.js' %}"></script>
+<script src="{% static '/apps/alojamiento/lista_reservaalojamiento.js' %}"></script>
+<script>
+//Para los templates en los box ver ejemplo examples/timeline/styling/itemTemplates.html
+// var timeline = null;
+
+
+$('input[type=checkbox]').iCheck({checkboxClass: 'icheckbox_minimal-blue',});
+
+
+// $('#select_comentarios').multiSelect();
+
+
+
+  params_datepicker = {
+        format: 'dddd DD-MM-YYYY',
+        clearButton: true,
+        lang: 'es',
+        weekStart: 1,
+        time: false
+    }
+
+  datepicker_fecha_inicial = $('input[name=fecha_inicial]').bootstrapMaterialDatePicker(params_datepicker);
+  datepicker_fecha_final = $('input[name=fecha_final]').bootstrapMaterialDatePicker(params_datepicker);
+
+  select_alojamientos = null
+  select_canal_venta = null
+  select_comentarios = null
+  select_personas = $('#select_personas').selectpicker({
+      showTick:true,
+      width:"100%",
+    });
+
+  timeline = null;
+
+  var params_cliente = {
+        id : 'tabla_cliente_id',
+        url : "{% url 'cliente:lista-cliente-json' %}", 
+        ajax: true,
+        ajaxData : {'acciones':['seleccion_cliente']},
+        "autoWidht": false,
+        "widht": "100%",
+        'scrollX':true,
+        "scrollY":'350px',
+        "scrollCollapse": true,
+        "preProcess": function(respuesta) {
+          _columnas = []
+          _columnas.push({'title':'', 'data':'acciones'})
+          for (var i = 0; i < respuesta.columnas.length; i++)
+            _columnas.push(respuesta.columnas[i])
+          respuesta.columnas = _columnas
+          console.log(respuesta)
+          return respuesta
+        },
+      };
+  var sparseTabla_cliente = $('#container_tabla_cliente').sparseDataTable(params_cliente);
+
+  var params_tarifa = {
+        id : 'tabla_tarifa_id',
+        ajax: false,
+        "autoWidht": false,
+        "widht": "100%",
+        'scrollX':true,
+        "scrollY":'450px',
+        "scrollCollapse": true,
+        // "order": [[ 0, "asc" ],[ 1, "asc" ]],
+        columnas: [],
+        data: [],
+      };
+  // var sparseTabla_tarifa = $('#container_tabla_tarifa').sparseDataTable(params_tarifa);
+  var sparseTabla_tarifa = null;
+
+
+
+  function focus () {
+    timeline.focus([1003, 1005], {animation: {duration: 1000, easingFunction: 'linear'}}); // ms
+  };
+
+  ajaxCargarOcupacionAlojamiento(url_data_ocupacion_alojamiento);
+  ajaxCargarTarifas(url_tarifas)
+  ajaxCargarCanalesVenta(url_canalesventa)
+  ajaxCargarComentarios(url_comentarios)
+
+</script>
+{% endblock %}

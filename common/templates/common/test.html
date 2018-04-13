@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load common_tags %}
+{% block titulo_head %}Test sitio{% endblock%}
+{% block titulo%}{% endblock%}
+{% block css %}
+    {% css_dataTable %}
+{% endblock %}
+{% block contenido %}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Test
+                </h2>
+            </div>
+            <div id="contenedor_lista"class="body">
+                <button type="button" class="btn bg-indigo waves-effect" id="test_01">TEST 01</button> 
+                <button type="button" class="btn bg-indigo waves-effect" id="test_02">TEST 02</button> 
+                <button type="button" class="btn bg-indigo waves-effect" id="test_03">TEST 03</button> </br></br>
+                <button type="button" class="btn bg-indigo waves-effect" id="test_04">TEST 04</button> 
+                <button type="button" class="btn bg-indigo waves-effect" id="test_05">TEST 05</button> 
+                <button type="button" class="btn bg-indigo waves-effect" id="test_06">TEST 06</button> </br></br>
+                <button type="button" class="btn bg-indigo waves-effect" id="test_07">TEST 07</button> 
+                <button type="button" class="btn bg-indigo waves-effect" id="test_08">TEST 08</button> 
+                <button type="button" class="btn bg-indigo waves-effect" id="test_09">TEST 09</button> 
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+{% js_dataTable True %}
+
+<script src="{% static '/base/js/DjangoAjax.js' %}"></script>
+
+{% django_ajax %}
+<script>
+
+
+    function ajaxGestionPotencialCliente (url, button_id=''){
+        blockpage(true)
+        $.ajax({
+            method: "POST",
+            url: url,
+            data: {}
+        }).done(function( response ) {
+            console.log(response);
+                swal({
+                  title: "Mensaje",
+                  text: button_id+" success",
+                  icon: "success",
+                });
+            blockpage(false)
+        }).fail(function(response) {
+            console.log(response);
+            swal({
+                  title: "Servidor",
+                  text: "Error en "+button_id+" la petición",
+                  icon: "error",
+            });
+            blockpage(false)
+        });
+    }
+
+
+        //Evento ver log
+    $(document).on('click',"button" ,function() {
+        url = null;
+        button_id = $(this).attr('id')
+        if (button_id == "test_01")
+            url = "{% url 'common:test-01' %}"
+        else
+        if (button_id == "test_02")
+            url = "{% url 'common:test-02' %}"
+        else
+        if (button_id == "test_03")
+            url = "{% url 'common:test-03' %}"
+        else
+        if (button_id == "test_04")
+            url = "{% url 'common:test-04' %}"
+        else
+        if (button_id == "test_05")
+            url = "{% url 'common:test-05' %}"
+        else
+        if (button_id == "test_06")
+            url = "{% url 'common:test-06' %}"
+        else
+        if (button_id == "test_07")
+            url = "{% url 'common:test-07' %}"
+        else
+        if (button_id == "test_08")
+            url = "{% url 'common:test-08' %}"
+        else
+        if (button_id == "test_09")
+            url = "{% url 'common:test-09' %}"
+        else
+            return
+        ajaxGestionPotencialCliente (url, button_id)
+    });
+
+/**/
+    </script>
+
+
+{% endblock %}
