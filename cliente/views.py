@@ -168,15 +168,15 @@ def json_lista_cliente(request):
         # aux['acciones'] = '<table  style ="width:100%; border:0px; padding:0px;"><tbody><tr><td style="width:50px; border:0px; padding:0px;"><button name="log" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">info</i></button></td><td style="width:50px; border:0px; padding:0px;"><button name="pdf_ficha" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">print</i></button></td><td style="width:50px; border:0px; padding:0px;"><button name="editar_cliente"   cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">edit</i></button></td></tr></tbody></table>'
         aux['acciones'] = '<table  style ="width:100%; border:0px; padding:0px;"><tbody><tr>'
         if 'log_cliente' in acciones:
-            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="log" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">info</i></button></td>'
+            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="log" cliente="'+unicode(item.id)+'" class="btn bg-indigo nav-pill waves-effect waves-block toggled"><i class="material-icons">info</i></button></td>'
         if 'pdf_ficha' in acciones:
-            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="pdf_ficha" cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled"><i class="material-icons">print</i></button></td>'
+            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="pdf_ficha" cliente="'+unicode(item.id)+'" class="btn bg-indigo nav-pill waves-effect waves-block toggled"><i class="material-icons">print</i></button></td>'
         if 'editar_cliente' in acciones:
-            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="editar_cliente"   cliente="'+unicode(item.id)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">edit</i></button></td>'
+            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="editar_cliente"   cliente="'+unicode(item.id)+'" class="btn bg-indigo nav-pill waves-effect waves-block toggled" ><i class="material-icons">edit</i></button></td>'
         if 'seleccion_cliente' in acciones:
-            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="seleccion_cliente"   cliente="'+unicode(item.id)+'"   cliente_nombre="'+unicode(item.nombres)+' '+unicode(item.apellidos)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">flash_on</i></button></td>'
+            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="seleccion_cliente"   cliente="'+unicode(item.id)+'"   cliente_nombre="'+unicode(item.nombres)+' '+unicode(item.apellidos)+'" class="btn bg-indigo nav-pill waves-effect waves-block toggled" ><i class="material-icons">flash_on</i></button></td>'
         if 'reserva_cliente' in acciones:
-            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="reserva_cliente"   cliente="'+unicode(item.id)+'"   cliente_nombre="'+unicode(item.nombres)+' '+unicode(item.apellidos)+'" class="btn btn-default nav-pill waves-effect waves-block toggled" ><i class="material-icons">event_note</i></button></td>'
+            aux['acciones'] += '<td style="width:50px; border:0px; padding:0px;"><button name="reserva_cliente"   cliente="'+unicode(item.id)+'"   cliente_nombre="'+unicode(item.nombres)+' '+unicode(item.apellidos)+'" class="btn bg-indigo nav-pill waves-effect waves-block toggled" ><i class="material-icons">event_note</i></button></td>'
         aux['acciones'] += '</tr></tbody></table>'
         data_table.append(aux)
     respuesta['data']=data_table

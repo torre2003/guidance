@@ -50,6 +50,8 @@
         "order": [[ 0, "asc" ]],
         // evento que se llama una vez que la tabla ha sido cargada y mostrada en la pagina.
         "initComplete": function(settings, json) {},
+        // evento que se llama antes de iniciar el proceso procesar los datos.
+        "preProcess": function(respuesta) { return respuesta },
         // evento que se llama una vez terminada la carga de success
         "successComplete": function(respuesta) {},
         // indica si se debe agregar el grafico dentro de un box.
@@ -133,6 +135,7 @@
                 data : this.options.ajaxData, // data sent with the post request
                 context : this, // hacemos el objeto accesible desde las funciones de ajax.
                 success : function(respuesta) {
+                    respuesta = this.options.preProcess(respuesta);
                     // asignamos los datos y columnas que fueron retornados en la respuesta.
                     if ( this.options.data.length == 0 ) {
                         this.options.data = respuesta.data;

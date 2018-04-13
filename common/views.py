@@ -35,11 +35,17 @@ def view_test(request):
 @login_required
 def json_test_01(request):
     print '*'*10,'   Test-01    ','*'*10
-    tarifas = mta.obtener_tarifas()
-    respuesta = list(tarifas)
-    for item in tarifas:
-        print item.__dict__
-    print respuesta
+
+    flag, errores =  moa.comprobar_ocupacionalojamiento(
+        alojamiento_id=1,
+        numero_personas=4,
+        fecha_inicio=datetime(2018,3,20),
+        fecha_final=datetime(2018,4,10),
+        cautiva=False,
+        canalventa_id=1,
+        tarifa_id=1,
+        )
+    print flag,'   -  ',errores
     print '*'*10,'   Test-01    ','*'*10
     return JsonResponse({})
 
@@ -48,13 +54,25 @@ def json_test_01(request):
 def json_test_02(request):
     print '*'*10,'   Test-02    ','*'*10
     # ma.crear_alojamiento(nombre='Cabaña Verde 7', codigo='CV7', tipoalojamiento_id=2, user_id=request.user.id)
+    flag, errores = mta.comprobar_tarifa_valida(
+        tarifa_id=7,
+        cliente_id=10,
+        temporada_id=1,
+        canalventa_id=2,
+        tipoalojamiento_id=1,
+    )
+    print flag,'   -  ',errores
     print '*'*10,'   Test-02    ','*'*10
     return JsonResponse({})
 
 @login_required
 def json_test_03(request):
     print '*'*10,'   Test-03    ','*'*10
-    ma.editar_alojamiento(alojamiento_id=1,nombre='Cabaña Naranja 1', codigo='CN1', tipoalojamiento_id=1, user_id=request.user.id)
+    moa.crear_comentario('Amigo de la dueña')
+    moa.crear_comentario('Familiar extranjero')
+    moa.crear_comentario('Cliente hiper sensible')
+    moa.crear_comentario('Celebridad')
+    moa.crear_comentario('Quien?')
     print '*'*10,'   Test-03    ','*'*10
     return JsonResponse({})
 
@@ -72,7 +90,17 @@ def json_test_04(request):
 @login_required
 def json_test_05(request):
     print '*'*10,'   Test-05    ','*'*10
-    print mt.editar_temporada(1,nombre='Temporada_Baja', descripcion='Temporada general del año. 29 Mar -- 20 Diciembre', user_id=request.user.id)
+    # print mt.editar_temporada(1,nombre='Temporada_Baja', descripcion='Temporada general del año. 29 Mar -- 20 Diciembre', user_id=request.user.id)
+    ManagerOcupacionAlojamiento.comprobar_ocupacionalojamiento(
+        alojamiento_id, 
+        numero_personas, 
+        fecha_inicial, 
+        fecha_final= datetime.date, 
+        cautiva = True, 
+        canalventa_id=1, 
+        tarifa_id=1,
+    )
+
     print '*'*10,'   Test-05    ','*'*10
     return JsonResponse({})
 
@@ -82,8 +110,8 @@ def json_test_06(request):
     print '*'*10,'   Test-06    ','*'*10
 
     mta.crear_tarifa(
-        nombre='Tarifa por dias', 
-        descripcion='Tarifa para captar clientes', 
+        nombre='Tarifa 8', 
+        descripcion='Descripción tarifa 8', 
         habilitado=True,
         restricciones = {
             'temporadas':[1],
@@ -294,3 +322,4 @@ def json_test_09(request):
 def view_test_11(request):
     context = {}
     return render(request, CommonConfig.name+'/ejemplo_timeline.html', context)
+
