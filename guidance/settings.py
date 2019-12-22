@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'common',
     'alojamiento',
     'alojamiento.tarifa',
+    'cuenta_monetaria',
 ]
 
 MIDDLEWARE = [
